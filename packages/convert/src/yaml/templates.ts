@@ -184,9 +184,6 @@ function escTemplate(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
 
-/** Escape for template literal, but also rewrite $(Token) → ${PreDef...} interpolations. */
-const PREDEF_TOKEN_RE = /\$\(([A-Za-z][A-Za-z0-9_.]*)\)/g;
-
 function escTemplateWithPredef(s: string, usedNs: Set<string>): string {
   const r = rewriteString(s);
   if (!r) {
@@ -620,7 +617,6 @@ function assessComplexity(value: unknown, inArrayItem = false): Complexity {
 const IF_KEY_RE = /^\$\{\{\s*if\s+(.+?)\s*\}\}$/;
 const EACH_KEY_RE = /^\$\{\{\s*each\s+(\w+)\s+in\s+parameters\.(\w+)\s*\}\}$/;
 const ELSE_KEY_RE = /^\$\{\{\s*else\s*\}\}$/;
-const ELSEIF_KEY_RE = /^\$\{\{\s*else\s*if\s+(.+?)\s*\}\}$/;
 
 /**
  * Convert `${{ if }}` and `${{ each }}` expressions in arrays to TS-representable
@@ -695,7 +691,6 @@ function convertArrayExpressions(arr: unknown[], paramNames: string[]): unknown[
 
     const eachMatch = EACH_KEY_RE.exec(key);
     if (eachMatch) {
-      const itemVar = eachMatch[1]!;
       const listParam = eachMatch[2]!;
       if (!paramNames.includes(listParam)) {
         result.push(convertExpressions(item, paramNames));

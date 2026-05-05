@@ -3,7 +3,7 @@
  * Run with: node --loader ts-node/esm scripts/gen-connection-inputs.ts
  * Or simply: npx tsx scripts/gen-connection-inputs.ts
  */
-import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
