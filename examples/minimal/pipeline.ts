@@ -1,6 +1,6 @@
-import { pipeline, script, checkout } from '@mauve/azpipe';
-import { useNodeV1 } from '@mauve/azpipe-tasks';
-import { extend } from '@mauve/azpipe-utils';
+import { pipeline, script, checkout } from '@mauvezero/azpipe';
+import { useNodeV1 } from '@mauvezero/azpipe-tasks';
+import { extend } from '@mauvezero/azpipe-utils';
 import { buildAndTest } from './templates.js';
 
 export default pipeline()

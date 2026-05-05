@@ -7,9 +7,9 @@
     "build": "node ../../packages/cli/dist/bin.js build pipeline.ts --out azure-pipelines.yml"
   },
   "dependencies": {
-    "@mauve/azpipe": "workspace:*",
-    "@mauve/azpipe-utils": "workspace:*",
-    "@mauve/azpipe-tasks": "workspace:*",
-    "@mauve/azpipe-cli": "workspace:*"
+    "@mauvezero/azpipe": "workspace:*",
+    "@mauvezero/azpipe-utils": "workspace:*",
+    "@mauvezero/azpipe-tasks": "workspace:*",
+    "@mauvezero/azpipe-cli": "workspace:*"
   }
 }

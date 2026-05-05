@@ -3,10 +3,10 @@ import {
   approval,
   buildArtifact,
   gates,
-} from '@mauve/azpipe-releases';
-import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauve/azpipe-tasks';
-import { PreDef } from '@mauve/azpipe-utils';
-import { calendarGate, calendarGateConnection } from '@mauve/custom';
+} from '@mauvezero/azpipe-releases';
+import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauvezero/azpipe-tasks';
+import { PreDef } from '@mauvezero/azpipe-utils';
+import { calendarGate, calendarGateConnection } from '@mauvezero/custom';
 
 const web = buildArtifact({
   alias: 'web',

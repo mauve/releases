@@ -1,4 +1,4 @@
-import { defineTemplate } from '@mauve/azpipe-utils';
+import { defineTemplate } from '@mauvezero/azpipe-utils';
 
 export const buildAndTest = defineTemplate({
   name: 'build-and-test',

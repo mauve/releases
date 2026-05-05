@@ -9,10 +9,10 @@
     "push:dry": "node ../../packages/cli/dist/bin.js release push release.ts --dry-run"
   },
   "dependencies": {
-    "@mauve/azpipe-releases": "workspace:*",
-    "@mauve/azpipe-tasks": "workspace:*",
-    "@mauve/azpipe-utils": "workspace:*",
-    "@mauve/azpipe-cli": "workspace:*",
-    "@mauve/custom": "workspace:*"
+    "@mauvezero/azpipe-releases": "workspace:*",
+    "@mauvezero/azpipe-tasks": "workspace:*",
+    "@mauvezero/azpipe-utils": "workspace:*",
+    "@mauvezero/azpipe-cli": "workspace:*",
+    "@mauvezero/custom": "workspace:*"
   }
 }
