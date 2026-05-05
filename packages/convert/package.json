@@ -1,6 +1,6 @@
 {
   "name": "@mauve/azpipe-convert",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Convert existing azure-pipelines.yml and classic release JSON into TypeScript that uses @mauve/azpipe builders.",
   "type": "module",
   "main": "./dist/index.js",

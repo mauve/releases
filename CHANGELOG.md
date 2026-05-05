@@ -10,6 +10,8 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-05
+
 ### Added
 
 - **`@mauve/azpipe`**: `.jobs(jobs)` method on `StageBuilder` for adding pre-built job objects.
