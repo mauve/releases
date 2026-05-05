@@ -28,6 +28,7 @@ import type {
   TaskStep,
   Variable,
 } from '@mauve/azpipe';
+import { posix as posixPath } from 'node:path';
 import {
   expr,
   isRaw,
@@ -69,10 +70,16 @@ interface Ctx {
   imports: ImportCollector;
   scope: IdentifierScope;
   templates: Map<string, ReferencedTemplate>;
+  outputDir: string;
+}
+
+export interface EmitOptions {
+  /** Relative path from input YAML dir to output entry dir. Default: `'.'`. */
+  outputDir?: string;
 }
 
 /** Convert a parsed pipeline to TS source. */
-export function emitPipelineSource(pipeline: PipelineRoot): YamlEmitResult {
+export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {}): YamlEmitResult {
   // Run a deep predef rewrite on a clone so subsequent walks see RawExprs in
   // place of `$(Build.SourceBranch)` strings.
   const { value: rewritten, usedNamespaces } = rewriteTree(pipeline);
@@ -82,6 +89,7 @@ export function emitPipelineSource(pipeline: PipelineRoot): YamlEmitResult {
     imports: new ImportCollector(),
     scope: new IdentifierScope(),
     templates: new Map(),
+    outputDir: opts.outputDir ?? '.',
   };
   ctx.imports.add(AZPIPE, 'pipeline');
   if (usedNamespaces.size > 0) ctx.imports.add(UTILS, 'PreDef');
@@ -99,7 +107,7 @@ export function emitPipelineSource(pipeline: PipelineRoot): YamlEmitResult {
     for (const p of root.parameters) calls.push(method('parameter', [valueArg(p)]));
   }
   if (root.variables) {
-    for (const v of root.variables) calls.push(...renderVariableMethod(v, ctx));
+    for (const v of normalizeVariables(root.variables)) calls.push(...renderVariableMethod(v, ctx));
   }
   if (root.resources) calls.push(method('resources', [valueArg(root.resources)]));
   if (root.lockBehavior) calls.push(method('lockBehavior', [valueArg(root.lockBehavior)]));
@@ -137,8 +145,12 @@ export function emitPipelineSource(pipeline: PipelineRoot): YamlEmitResult {
   const referencedTemplates = [...ctx.templates.values()];
 
   // Templates that are imported by name need to land in the import block.
+  // The import path must match where templates are placed relative to the entry.
   for (const t of referencedTemplates) {
-    ctx.imports.add(`./templates/${baseName(t.templatePath)}.js`, t.identifier);
+    const rawPath = templateFilePath(t.templatePath);
+    const rebased = rebaseTemplatePath(rawPath, ctx.outputDir);
+    const importPath = (rebased.startsWith('../') ? rebased : './' + rebased).replace(/\.ts$/, '.js');
+    ctx.imports.add(importPath, t.identifier);
   }
 
   const importBlock = ctx.imports.render();
@@ -161,7 +173,8 @@ function renderTopLevelStage(stage: AnyStage, ctx: Ctx): string[] {
     }
     return [method('stageTemplate', [strLit(stage.template)])];
   }
-  return [method('stage', [strLit(stage.stage), renderStageBody(stage, ctx)])];
+  const stageName = stage.stage != null ? strLit(stage.stage) : 'null';
+  return [method('stage', [stageName, renderStageBody(stage, ctx)])];
 }
 
 function renderTopLevelJob(job: AnyJob, ctx: Ctx): string[] {
@@ -176,7 +189,8 @@ function renderTopLevelJob(job: AnyJob, ctx: Ctx): string[] {
   if ('deployment' in job) {
     return [renderDeploymentJobCall(job, ctx)];
   }
-  return [method('job', [strLit(job.job), renderJobBody(job, ctx)])];
+  const jobName = job.job != null ? strLit(job.job) : 'null';
+  return [method('job', [jobName, renderJobBody(job, ctx)])];
 }
 
 // ---- stage body ---------------------------------------------------------
@@ -190,7 +204,7 @@ function renderStageBody(stage: Exclude<AnyStage, { template: string }>, ctx: Ct
   if (stage.lockBehavior !== undefined) calls.push(method('lockBehavior', [valueArg(stage.lockBehavior)]));
   if (stage.trigger !== undefined) calls.push(method('trigger', [valueArg(stage.trigger)]));
   if (stage.variables) {
-    for (const v of stage.variables) calls.push(...renderVariableMethod(v, ctx));
+    for (const v of normalizeVariables(stage.variables)) calls.push(...renderVariableMethod(v, ctx));
   }
   if (stage.jobs) {
     for (const job of stage.jobs) {
@@ -205,7 +219,8 @@ function renderStageBody(stage: Exclude<AnyStage, { template: string }>, ctx: Ct
       } else if ('deployment' in job) {
         calls.push(renderDeploymentJobCall(job, ctx));
       } else {
-        calls.push(method('job', [strLit(job.job), renderJobBody(job, ctx)]));
+        const jobName = job.job != null ? strLit(job.job) : 'null';
+        calls.push(method('job', [jobName, renderJobBody(job, ctx)]));
       }
     }
   }
@@ -227,7 +242,7 @@ function renderJobBody(job: JobObject, ctx: Ctx): string {
   if (job.container !== undefined) calls.push(method('container', [valueArg(job.container)]));
   if (job.services !== undefined) calls.push(method('services', [valueArg(job.services)]));
   if (job.variables) {
-    for (const v of job.variables) calls.push(...renderVariableMethod(v, ctx));
+    for (const v of normalizeVariables(job.variables)) calls.push(...renderVariableMethod(v, ctx));
   }
   if (job.steps) {
     for (const step of job.steps) calls.push(method('step', [renderStep(step, ctx)]));
@@ -250,7 +265,7 @@ function renderDeploymentJobCall(d: DeploymentJobObject, ctx: Ctx): string {
   // variables go through the configurator so PreDef rewrites apply via valueArg
   const subCalls: string[] = [];
   if (d.variables) {
-    for (const v of d.variables) subCalls.push(...renderVariableMethod(v, ctx));
+    for (const v of normalizeVariables(d.variables)) subCalls.push(...renderVariableMethod(v, ctx));
   }
   // If runOnce.deploy.steps exist, lift them through .runOnce
   const ro = (d.strategy as { runOnce?: { deploy?: { steps?: Step[] } } } | undefined)?.runOnce;
@@ -401,6 +416,21 @@ function renderArray(arr: unknown[]): string {
   return '[' + arr.map((v) => valueArg(v)).join(', ') + ']';
 }
 
+/**
+ * Normalize variables from either array form or mapping form into Variable[].
+ * Azure Pipelines accepts both `variables: [{name, value}]` and `variables: {key: value}`.
+ */
+function normalizeVariables(vars: unknown): Variable[] {
+  if (Array.isArray(vars)) return vars;
+  if (vars && typeof vars === 'object') {
+    return Object.entries(vars as Record<string, unknown>).map(([name, value]) => ({
+      name,
+      value: value as string | number | boolean,
+    }));
+  }
+  return [];
+}
+
 function registerTemplate(
   ctx: Ctx,
   templatePath: string,
@@ -425,6 +455,22 @@ function baseName(p: string): string {
   const slash = noAt.lastIndexOf('/');
   const tail = slash >= 0 ? noAt.slice(slash + 1) : noAt;
   return tail.replace(/\.ya?ml$/i, '');
+}
+
+/** Derive the output .ts file path for a template (mirrors templates.ts logic). */
+function templateFilePath(referencePath: string): string {
+  const noAt = stripAtRepo(referencePath);
+  const dir = noAt.includes('/') ? noAt.slice(0, noAt.lastIndexOf('/')) : '';
+  const file = noAt.slice(noAt.lastIndexOf('/') + 1).replace(/\.ya?ml$/i, '.ts');
+  return (dir ? dir + '/' : 'templates/') + file;
+}
+
+/**
+ * Rebase a template file path from input-YAML-relative to output-entry-relative.
+ */
+function rebaseTemplatePath(tplPath: string, outputDir: string): string {
+  if (outputDir === '.') return tplPath;
+  return posixPath.relative(outputDir, tplPath);
 }
 
 // Re-export for tests.

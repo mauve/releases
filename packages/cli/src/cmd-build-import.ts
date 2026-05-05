@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { yamlToTs } from '@mauve/azpipe-convert';
 
 interface ImportOpts {
@@ -76,10 +76,14 @@ export async function runBuildImport(argv: string[]): Promise<void> {
   const outAbs = isAbsolute(opts.out) ? opts.out : resolve(process.cwd(), opts.out);
   const outDir = dirname(outAbs);
 
+  // Relative path from input dir to output dir — used to rebase template paths.
+  const outputDirRel = relative(inputDir, outDir) || '.';
+
   const result = await yamlToTs(yamlText, {
     prettier: opts.prettier,
     emitTemplates: opts.emitTemplates,
     entryFileName: opts.out,
+    outputDir: outputDirRel,
     loadTemplate: (templatePath) => {
       const at = templatePath.indexOf('@');
       if (at >= 0) return undefined; // template@repo refers to another repo — skip

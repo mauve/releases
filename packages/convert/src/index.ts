@@ -18,6 +18,7 @@
  */
 
 import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import { posix as path } from 'node:path';
 import { parsePipelineYaml, type ParseOptions } from './yaml/parse.js';
 import { emitPipelineSource, type ReferencedTemplate } from './yaml/emit.js';
 import { emitTemplateSource } from './yaml/templates.js';
@@ -52,6 +53,15 @@ export interface YamlConvertOptions extends ParseOptions {
   emitTemplates?: boolean;
   /** Output filename for the entry pipeline. Default: `'pipeline.ts'`. */
   entryFileName?: string;
+  /**
+   * Relative path from the input YAML directory to the output entry directory.
+   * Used to rebase template paths so imports are correct relative to the
+   * output entry. Default: `'.'` (same directory).
+   *
+   * For example, if YAML is at `repo/azure-pipelines.yml` and output is
+   * `repo/pipelines/pipeline.ts`, pass `'pipelines'`.
+   */
+  outputDir?: string;
 }
 
 export interface ReleaseConvertLibraryOptions extends ReleaseEmitOptions {
@@ -72,7 +82,8 @@ export async function yamlToTs(
   opts: YamlConvertOptions = {},
 ): Promise<ConvertResult> {
   const { pipeline, warnings } = parsePipelineYaml(yamlText, opts);
-  const { source, referencedTemplates } = emitPipelineSource(pipeline);
+  const outputDir = opts.outputDir ?? '.';
+  const { source, referencedTemplates } = emitPipelineSource(pipeline, { outputDir });
   const files: ConvertedFile[] = [];
   const entryName = opts.entryFileName ?? 'pipeline.ts';
   files.push({ path: entryName, contents: await maybeFormat(source, opts.prettier) });
@@ -88,8 +99,10 @@ export async function yamlToTs(
         yamlText: yamlSrc,
         kind: ref.kind,
       });
+      // Rebase template file path from input-relative to output-relative.
+      const rebasedPath = rebasePath(tFile.filePath, outputDir);
       files.push({
-        path: tFile.filePath,
+        path: rebasedPath,
         contents: await maybeFormat(tFile.source, opts.prettier),
       });
     }
@@ -121,6 +134,12 @@ export async function releaseJsonToTs(
 async function maybeFormat(source: string, prettier?: boolean): Promise<string> {
   if (prettier === false) return source;
   return formatTs(source);
+}
+
+/** Rebase a path from input-YAML-relative to output-entry-relative. */
+function rebasePath(filePath: string, outputDir: string): string {
+  if (outputDir === '.') return filePath;
+  return path.relative(outputDir, filePath);
 }
 
 export { stripServerFields } from './release/parse.js';
