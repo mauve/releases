@@ -35,40 +35,40 @@ importers:
 
   examples/minimal:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../../packages/azpipe
-      '@mauve/azpipe-cli':
+      '@mauvezero/azpipe-cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@mauve/azpipe-tasks':
+      '@mauvezero/azpipe-tasks':
         specifier: workspace:*
         version: link:../../packages/tasks
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../../packages/utils
 
   examples/release-minimal:
     dependencies:
-      '@mauve/azpipe-cli':
+      '@mauvezero/azpipe-cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@mauve/azpipe-releases':
+      '@mauvezero/azpipe-releases':
         specifier: workspace:*
         version: link:../../packages/releases
-      '@mauve/azpipe-tasks':
+      '@mauvezero/azpipe-tasks':
         specifier: workspace:*
         version: link:../../packages/tasks
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      '@mauve/custom':
+      '@mauvezero/custom':
         specifier: workspace:*
         version: link:../../packages/custom
 
   packages/azpipe:
     dependencies:
-      '@mauve/azpipe-core':
+      '@mauvezero/azpipe-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -81,25 +81,25 @@ importers:
 
   packages/cli:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../azpipe
-      '@mauve/azpipe-convert':
+      '@mauvezero/azpipe-convert':
         specifier: workspace:*
         version: link:../convert
-      '@mauve/azpipe-core':
+      '@mauvezero/azpipe-core':
         specifier: workspace:*
         version: link:../core
-      '@mauve/azpipe-releases':
+      '@mauvezero/azpipe-releases':
         specifier: workspace:*
         version: link:../releases
-      '@mauve/azpipe-releases-client':
+      '@mauvezero/azpipe-releases-client':
         specifier: workspace:*
         version: link:../releases-client
-      '@mauve/azpipe-tasks':
+      '@mauvezero/azpipe-tasks':
         specifier: workspace:*
         version: link:../tasks
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
       tsx:
@@ -118,19 +118,19 @@ importers:
 
   packages/convert:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../azpipe
-      '@mauve/azpipe-core':
+      '@mauvezero/azpipe-core':
         specifier: workspace:*
         version: link:../core
-      '@mauve/azpipe-releases':
+      '@mauvezero/azpipe-releases':
         specifier: workspace:*
         version: link:../releases
-      '@mauve/azpipe-tasks':
+      '@mauvezero/azpipe-tasks':
         specifier: workspace:*
         version: link:../tasks
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
       prettier:
@@ -171,7 +171,7 @@ importers:
 
   packages/custom:
     dependencies:
-      '@mauve/azpipe-releases':
+      '@mauvezero/azpipe-releases':
         specifier: workspace:*
         version: link:../releases
     devDependencies:
@@ -184,13 +184,13 @@ importers:
 
   packages/releases:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../azpipe
-      '@mauve/azpipe-tasks':
+      '@mauvezero/azpipe-tasks':
         specifier: workspace:*
         version: link:../tasks
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
     devDependencies:
@@ -206,10 +206,10 @@ importers:
       '@azure/identity':
         specifier: ^4.5.0
         version: 4.13.1
-      '@mauve/azpipe-releases':
+      '@mauvezero/azpipe-releases':
         specifier: workspace:*
         version: link:../releases
-      '@mauve/azpipe-utils':
+      '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
     devDependencies:
@@ -225,7 +225,7 @@ importers:
 
   packages/tasks:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../azpipe
     devDependencies:
@@ -238,10 +238,10 @@ importers:
 
   packages/utils:
     dependencies:
-      '@mauve/azpipe':
+      '@mauvezero/azpipe':
         specifier: workspace:*
         version: link:../azpipe
-      '@mauve/azpipe-core':
+      '@mauvezero/azpipe-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
