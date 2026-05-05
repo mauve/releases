@@ -8,7 +8,7 @@ import { yamlToTs } from '../src/index.js';
  *
  * The TS output is written to a temp file under packages/convert so the
  * Node.js module resolver walks up to the workspace root and resolves
- * `@mauve/azpipe` etc. via pnpm's symlinks.
+ * `@mauvezero/azpipe` etc. via pnpm's symlinks.
  */
 
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';

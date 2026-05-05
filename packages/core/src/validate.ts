@@ -26,7 +26,7 @@ let cached: ValidateFunction | null = null;
  *
  * We patch the schema in-memory so we don't reject pipelines Azure would run.
  * Per-task input correctness is the responsibility of the typed TypeScript APIs
- * in `@mauve/azpipe-tasks`, not the runtime validator.
+ * in `@mauvezero/azpipe-tasks`, not the runtime validator.
  */
 function relaxSchema(schema: unknown): unknown {
   const cloned = JSON.parse(JSON.stringify(schema)) as {
