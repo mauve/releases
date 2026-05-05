@@ -34,7 +34,7 @@ git -C vendor/azure-pipelines-tasks read-tree -mu HEAD
 
 ```bash
 pnpm -r build           # build everything (uses TypeScript project references)
-pnpm --filter @mauve/azpipe-core build    # build a single package
+pnpm --filter @mauvezero/azpipe-core build    # build a single package
 ```
 
 Build output goes to `packages/<name>/dist/`. The CLI's executable lands at `packages/cli/dist/bin.js`.
@@ -43,7 +43,7 @@ Build output goes to `packages/<name>/dist/`. The CLI's executable lands at `pac
 
 ```bash
 pnpm -r test            # all packages
-pnpm --filter @mauve/azpipe test          # one package
+pnpm --filter @mauvezero/azpipe test          # one package
 ```
 
 Tests use [Vitest](https://vitest.dev). Snapshot tests live alongside unit tests in each package's `test/` directory.
@@ -81,7 +81,7 @@ pnpm -r test
 
 ## Sync the task definitions
 
-`@mauve/azpipe-tasks` ships a typed function per non-deprecated task in [`microsoft/azure-pipelines-tasks`](https://github.com/microsoft/azure-pipelines-tasks). The generated TypeScript lives in `packages/tasks/src/generated/` and is committed.
+`@mauvezero/azpipe-tasks` ships a typed function per non-deprecated task in [`microsoft/azure-pipelines-tasks`](https://github.com/microsoft/azure-pipelines-tasks). The generated TypeScript lives in `packages/tasks/src/generated/` and is committed.
 
 To pick up upstream changes:
 
@@ -104,7 +104,7 @@ pnpm -r test
 3. Emits one TypeScript file per `(task, major-version)` into `packages/tasks/src/generated/<kebab-case>/v<N>.ts`.
 4. Emits a `connections.ts` with branded types/constructors per `connectedService:<Kind>`.
 5. Re-exports everything via `packages/tasks/src/generated/index.ts`.
-6. Emits `packages/tasks/src/generated/task-ids.ts` mapping `'AzureCLI@2' → { id, major }`. This is consumed by `@mauve/azpipe-releases`'s workflow-task adapter so a `useNodeV1(...)` call in a release definition resolves to the right GUID.
+6. Emits `packages/tasks/src/generated/task-ids.ts` mapping `'AzureCLI@2' → { id, major }`. This is consumed by `@mauvezero/azpipe-releases`'s workflow-task adapter so a `useNodeV1(...)` call in a release definition resolves to the right GUID.
 
 TSDoc on every generated function and field is copied from the upstream `task.json` (`label`, `helpMarkDown`, picklist labels, `defaultValue`, `visibleRule`) so consumers see the same documentation Azure DevOps shows in its task editor.
 
@@ -112,7 +112,7 @@ Review the diff of `packages/tasks/src/generated/` before committing — the sub
 
 ## Sync the predefined-variable catalog
 
-`@mauve/azpipe-utils` exposes `PreDef` — typed symbols for every predefined Azure DevOps variable (`PreDef.Pipeline.Build.SourceBranch === '$(Build.SourceBranch)'`). The list is generated from MS Learn's source markdown; refresh it when Microsoft adds or rephrases entries:
+`@mauvezero/azpipe-utils` exposes `PreDef` — typed symbols for every predefined Azure DevOps variable (`PreDef.Pipeline.Build.SourceBranch === '$(Build.SourceBranch)'`). The list is generated from MS Learn's source markdown; refresh it when Microsoft adds or rephrases entries:
 
 ```bash
 pnpm sync-vars
@@ -133,7 +133,7 @@ When the heuristic gets a categorization wrong, add a hand-pin to `packages/util
 
 ## Working with Release definitions
 
-`@mauve/azpipe-releases` ships definition types + builders; `@mauve/azpipe-releases-client` adds the REST client. They have **no** code-generation step — types are hand-written from the [Azure DevOps Releases REST reference](https://learn.microsoft.com/rest/api/azure/devops/release/definitions).
+`@mauvezero/azpipe-releases` ships definition types + builders; `@mauvezero/azpipe-releases-client` adds the REST client. They have **no** code-generation step — types are hand-written from the [Azure DevOps Releases REST reference](https://learn.microsoft.com/rest/api/azure/devops/release/definitions).
 
 ### Authentication
 
@@ -166,14 +166,14 @@ pnpm exec azpipe release get <release-name> \
 
 Treat fixtures as test data — keep them small and focused (one fixture per scenario rather than a big shared one).
 
-## Custom helpers (`@mauve/custom`)
+## Custom helpers (`@mauvezero/custom`)
 
-Some Azure DevOps tasks and gates are contributed by Mauve-internal extensions and aren't part of the public marketplace catalog `@mauve/azpipe-tasks` generates from. `@mauve/custom` is the home for hand-written typed wrappers around those helpers.
+Some Azure DevOps tasks and gates are contributed by Mauve-internal extensions and aren't part of the public marketplace catalog `@mauvezero/azpipe-tasks` generates from. `@mauvezero/custom` is the home for hand-written typed wrappers around those helpers.
 
 ### What goes here vs. upstream
 
-- **`@mauve/custom`** — anything specific to a Mauve-internal extension or convention. Hand-written, low-volume, evolves with the extensions.
-- **`@mauve/azpipe-utils`** / **`azpipe-tasks`** / **`azpipe-releases`** — anything reusable across orgs. If a helper would be useful to a team that doesn't run Mauve's extensions, push it upstream instead.
+- **`@mauvezero/custom`** — anything specific to a Mauve-internal extension or convention. Hand-written, low-volume, evolves with the extensions.
+- **`@mauvezero/azpipe-utils`** / **`azpipe-tasks`** / **`azpipe-releases`** — anything reusable across orgs. If a helper would be useful to a team that doesn't run Mauve's extensions, push it upstream instead.
 
 ### Layout
 
@@ -208,7 +208,7 @@ The CalendarGate task ID and version live in `packages/custom/src/gates/calendar
 
 ### Why not codegen?
 
-`@mauve/azpipe-tasks` generates from a vendored submodule of `microsoft/azure-pipelines-tasks` because that catalog is large (~150 tasks) and changes frequently. Internal extensions are few, low-churn, and live in different repos that aren't safe to vendor wholesale. Hand-writing wins until we're maintaining more than a handful.
+`@mauvezero/azpipe-tasks` generates from a vendored submodule of `microsoft/azure-pipelines-tasks` because that catalog is large (~150 tasks) and changes frequently. Internal extensions are few, low-churn, and live in different repos that aren't safe to vendor wholesale. Hand-writing wins until we're maintaining more than a handful.
 
 ## Run the examples
 
@@ -233,7 +233,7 @@ pnpm exec azpipe release push release.ts --yes       # apply
 ## Adding a new package
 
 1. Create `packages/<name>/` with `package.json`, `tsconfig.json` (extend `../../tsconfig.base.json`, add references to deps), and `src/`.
-2. Add `dependencies` on `@mauve/azpipe` / `@mauve/azpipe-core` / `@mauve/azpipe-utils` using `workspace:*`.
+2. Add `dependencies` on `@mauvezero/azpipe` / `@mauvezero/azpipe-core` / `@mauvezero/azpipe-utils` using `workspace:*`.
 3. `pnpm install` from the repo root to register the new package and link workspace deps.
 4. Add `build`, `test`, `typecheck`, `clean` scripts that mirror the existing packages.
 
@@ -242,14 +242,14 @@ pnpm exec azpipe release push release.ts --yes       # apply
 ```
 releases/
   packages/
-    core/             # @mauve/azpipe-core   — schema + validator + serializer
-    azpipe/           # @mauve/azpipe        — fluent builders for YAML pipelines
-    utils/            # @mauve/azpipe-utils  — defineTemplate, merges, diff engine
-    tasks/            # @mauve/azpipe-tasks  — typed function per Azure task
-    releases/         # @mauve/azpipe-releases         — release-definition builders
-    releases-client/  # @mauve/azpipe-releases-client  — REST + Entra auth + push
-    custom/           # @mauve/custom        — Mauve-only gates / tasks / presets
-    cli/              # @mauve/azpipe-cli    — `azpipe build` and `azpipe release ...`
+    core/             # @mauvezero/azpipe-core   — schema + validator + serializer
+    azpipe/           # @mauvezero/azpipe        — fluent builders for YAML pipelines
+    utils/            # @mauvezero/azpipe-utils  — defineTemplate, merges, diff engine
+    tasks/            # @mauvezero/azpipe-tasks  — typed function per Azure task
+    releases/         # @mauvezero/azpipe-releases         — release-definition builders
+    releases-client/  # @mauvezero/azpipe-releases-client  — REST + Entra auth + push
+    custom/           # @mauvezero/custom        — Mauve-only gates / tasks / presets
+    cli/              # @mauvezero/azpipe-cli    — `azpipe build` and `azpipe release ...`
   examples/
     minimal/                                 # working example pipeline + template
   vendor/
@@ -261,7 +261,7 @@ releases/
 
 ## Releasing
 
-The nine `@mauve/azpipe-*` packages share a single version. A release is one tag, one CHANGELOG entry, one set of identical version bumps. CI is GitHub Actions: `.github/workflows/ci.yml` runs on PR + master push, `.github/workflows/release.yml` runs on `v*` tag push and creates a GitHub release.
+The nine `@mauvezero/azpipe-*` packages share a single version. A release is one tag, one CHANGELOG entry, one set of identical version bumps. CI is GitHub Actions: `.github/workflows/ci.yml` runs on PR + master push, `.github/workflows/release.yml` runs on `v*` tag push and creates a GitHub release.
 
 ### Workflow
 
@@ -274,7 +274,7 @@ The nine `@mauve/azpipe-*` packages share a single version. A release is one tag
    ```
 
    The script:
-   - bumps every `@mauve/*` package.json to `0.2.0`,
+   - bumps every `@mauvezero/*` package.json to `0.2.0`,
    - opens `CHANGELOG.md` in `$EDITOR` so you can rename `## [Unreleased]` to `## [0.2.0] - YYYY-MM-DD` and add a fresh empty `Unreleased` block at the top,
    - commits the changes and tags `v0.2.0`.
 
@@ -306,14 +306,14 @@ A newer commit on the same PR / branch supersedes any in-flight run via the work
 
 ## Common tasks
 
-| What                          | How                                              |
-| ----------------------------- | ------------------------------------------------ |
-| Build everything              | `pnpm -r build`                                  |
-| Run all tests                 | `pnpm -r test`                                   |
-| Lint                          | `pnpm lint`                                      |
-| Refresh the Azure schema      | `pnpm sync-schema && pnpm -r build`              |
-| Refresh the task definitions  | `git submodule update --remote vendor/azure-pipelines-tasks && pnpm sync-tasks && pnpm -r build` |
-| Refresh the predef-var catalog | `pnpm sync-vars && pnpm -r build`                |
-| Cut a release                 | `./scripts/release.sh <version> && git push && git push --tags` |
-| Rebuild the example           | `cd examples/minimal && pnpm exec azpipe build pipeline.ts` |
-| Clean all build artifacts     | `pnpm -r clean`                                  |
+| What                           | How                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Build everything               | `pnpm -r build`                                                                                  |
+| Run all tests                  | `pnpm -r test`                                                                                   |
+| Lint                           | `pnpm lint`                                                                                      |
+| Refresh the Azure schema       | `pnpm sync-schema && pnpm -r build`                                                              |
+| Refresh the task definitions   | `git submodule update --remote vendor/azure-pipelines-tasks && pnpm sync-tasks && pnpm -r build` |
+| Refresh the predef-var catalog | `pnpm sync-vars && pnpm -r build`                                                                |
+| Cut a release                  | `./scripts/release.sh <version> && git push && git push --tags`                                  |
+| Rebuild the example            | `cd examples/minimal && pnpm exec azpipe build pipeline.ts`                                      |
+| Clean all build artifacts      | `pnpm -r clean`                                                                                  |

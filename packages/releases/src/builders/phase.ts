@@ -13,7 +13,7 @@ import { taskStepToWorkflowTask } from '../workflow-task.js';
  * private agent and execute a workflowTasks list.
  *
  * Steps are accepted as YAML-pipeline {@link "TaskStep"} objects (use
- * `useNodeV1(...)`, `azureCLIV2(...)`, etc. from `@mauve/azpipe-tasks`)
+ * `useNodeV1(...)`, `azureCLIV2(...)`, etc. from `@mauvezero/azpipe-tasks`)
  * and converted to `workflowTask` shape internally.
  */
 export class AgentPhaseBuilder {

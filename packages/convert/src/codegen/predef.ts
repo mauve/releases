@@ -78,7 +78,7 @@ const TOKEN_RE = /\$\(([^)]+)\)/g;
  * matched and the caller should keep the original string literal).
  *
  * `usedNamespaces` lists the `PreDef.*` top-level branches the result
- * references — the caller must add `PreDef` from `@mauve/azpipe-utils`
+ * references — the caller must add `PreDef` from `@mauvezero/azpipe-utils`
  * to its import block when this is non-empty.
  */
 export interface RewriteResult {

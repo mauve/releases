@@ -1,7 +1,7 @@
 /**
  * Branded service-connection types for Mauve-internal Azure DevOps
  * extensions. Mirrors the codegen-emitted brands in
- * `@mauve/azpipe-tasks`'s `connections.ts` so consumers can't mix
+ * `@mauvezero/azpipe-tasks`'s `connections.ts` so consumers can't mix
  * connection kinds at the call site.
  */
 

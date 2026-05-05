@@ -2,7 +2,7 @@ import type { ShapeDescriptor } from './engine.js';
 
 /**
  * Identity-key descriptor for Azure Pipelines YAML documents (the shape
- * produced by {@link "PipelineBuilder.toObject"} from `@mauve/azpipe`).
+ * produced by {@link "PipelineBuilder.toObject"} from `@mauvezero/azpipe`).
  *
  * Descriptor keys are JSONPath globs naming an *array element* (with `[*]`
  * as the wildcard); values are the field on that element that uniquely

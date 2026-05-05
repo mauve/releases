@@ -1,12 +1,12 @@
 /**
- * `@mauve/azpipe-releases` — typesafe builders for Azure DevOps Classic
+ * `@mauvezero/azpipe-releases` — typesafe builders for Azure DevOps Classic
  * Release definitions.
  *
  * The output of {@link ReleasePipelineBuilder.toDefinition} is the JSON
  * document accepted by `PUT /_apis/release/definitions`. To talk to the REST
- * API (get, diff, push), use `@mauve/azpipe-releases-client`.
+ * API (get, diff, push), use `@mauvezero/azpipe-releases-client`.
  *
- * Marketplace tasks from `@mauve/azpipe-tasks` (e.g. `useNodeV1`,
+ * Marketplace tasks from `@mauvezero/azpipe-tasks` (e.g. `useNodeV1`,
  * `azureCLIV2`) are accepted directly via {@link AgentPhaseBuilder.step} —
  * they're translated to the release-side `workflowTask` shape using
  * {@link taskStepToWorkflowTask}.

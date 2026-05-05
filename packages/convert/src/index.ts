@@ -1,7 +1,7 @@
 /**
- * `@mauve/azpipe-convert` — convert existing `azure-pipelines.yml` files
+ * `@mauvezero/azpipe-convert` — convert existing `azure-pipelines.yml` files
  * and Azure DevOps Classic Release definitions into TypeScript that uses the
- * `@mauve/azpipe` and `@mauve/azpipe-releases` builders.
+ * `@mauvezero/azpipe` and `@mauvezero/azpipe-releases` builders.
  *
  * Two entry points:
  * - {@link yamlToTs} — accepts YAML text and returns one TS source per file
@@ -11,7 +11,7 @@
  *   a single TS source. The CLI layer wraps either reading from a JSON file or
  *   fetching live via the REST client.
  *
- * The library is pure: no fs / network. The CLI in `@mauve/azpipe-cli`
+ * The library is pure: no fs / network. The CLI in `@mauvezero/azpipe-cli`
  * adds file IO and the live-fetch path for releases.
  *
  * @packageDocumentation

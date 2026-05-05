@@ -170,7 +170,7 @@ export class StageBuilder {
    * Two forms are supported:
    * - `jobTemplate('templates/build.yml', { node: '20.x' })` — path + parameters.
    * - `jobTemplate(extend(typedTemplate, { ... }))` — pre-built reference object,
-   *   typically from {@link "extend"} in `@mauve/azpipe-utils`.
+   *   typically from {@link "extend"} in `@mauvezero/azpipe-utils`.
    */
   /** Append several pre-built job objects. */
   jobs(jobs: AnyJob[]): this {

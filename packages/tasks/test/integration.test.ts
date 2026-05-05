@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { pipeline, validatePipeline } from '@mauvezero/azpipe';
 import { useNodeV1, azureCLIV2, azureRMConnection } from '../src/index.js';
 
-describe('generated tasks integrate with @mauve/azpipe', () => {
+describe('generated tasks integrate with @mauvezero/azpipe', () => {
   it('useNodeV1 produces a TaskStep that validates against the Azure schema', () => {
     const obj = pipeline()
       .pool({ vmImage: 'ubuntu-latest' })

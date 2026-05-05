@@ -7,9 +7,9 @@ export class UnknownTaskRefError extends Error {
   constructor(taskRef: string) {
     super(
       `Unknown task ref ${JSON.stringify(taskRef)}: no GUID is known for this task. ` +
-        `Either it's a custom/marketplace task not in @mauve/azpipe-tasks's catalog, ` +
-        `or the catalog is out of date — try \`pnpm sync-tasks\`. ` +
-        `If this is a custom task, supply { taskId, version } via taskStepToWorkflowTask(step, { taskId, version }).`,
+      `Either it's a custom/marketplace task not in @mauvezero/azpipe-tasks's catalog, ` +
+      `or the catalog is out of date — try \`pnpm sync-tasks\`. ` +
+      `If this is a custom task, supply { taskId, version } via taskStepToWorkflowTask(step, { taskId, version }).`,
     );
     this.name = 'UnknownTaskRefError';
     this.taskRef = taskRef;
@@ -25,7 +25,7 @@ export interface WorkflowTaskOverrides {
 
 /**
  * Convert a YAML-pipeline {@link "TaskStep"} (e.g. produced by `useNodeV1(...)`,
- * `azureCLIV2(...)` from `@mauve/azpipe-tasks`) into the release-side
+ * `azureCLIV2(...)` from `@mauvezero/azpipe-tasks`) into the release-side
  * {@link WorkflowTask} shape. Looks up the task GUID from the generated
  * task-ids catalog by default; pass overrides for custom tasks.
  *

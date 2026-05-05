@@ -84,9 +84,9 @@ describe('calendarGate (high-level GateStep)', () => {
   });
 });
 
-describe('integration with @mauve/azpipe-releases', () => {
+describe('integration with @mauvezero/azpipe-releases', () => {
   it('drops into a `gates(...)` block cleanly', async () => {
-    const { gates: gatesBlock } = await import('@mauve/azpipe-releases');
+    const { gates: gatesBlock } = await import('@mauvezero/azpipe-releases');
     const block = gatesBlock({
       timeout: 240,
       gates: [calendarGate({ connection: calendarGateConnection('prod-cal') })],
@@ -97,7 +97,7 @@ describe('integration with @mauve/azpipe-releases', () => {
   });
 
   it("works with the widened gate() helper accepting WorkflowTasks", async () => {
-    const { gate } = await import('@mauve/azpipe-releases');
+    const { gate } = await import('@mauvezero/azpipe-releases');
     const step = gate('Combined', calendarGateCheck({ connection: calendarGateConnection('c') }));
     expect(step.tasks).toHaveLength(1);
     expect(step.tasks?.[0]?.taskId).toBe(CALENDAR_GATE_TASK_ID);

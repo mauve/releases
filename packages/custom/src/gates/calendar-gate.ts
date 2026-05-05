@@ -106,7 +106,7 @@ export interface CalendarGateOptions extends CalendarGateTaskOptions {
  *
  * Builds a complete {@link GateStep} containing exactly one
  * {@link calendarGateCheck} task. Ready to drop into
- * `gates({ gates: [calendarGate(...)] })` from `@mauve/azpipe-releases`.
+ * `gates({ gates: [calendarGate(...)] })` from `@mauvezero/azpipe-releases`.
  *
  * Same semantics as {@link calendarGateCheck}: blocks deployment when a
  * freeze event matches the running pipeline + environment. See the upstream

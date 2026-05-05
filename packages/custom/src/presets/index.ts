@@ -3,7 +3,7 @@
  * (e.g. "wrap a stage in a freeze check + a notification step"). Empty for
  * now — add when a real consumer asks.
  *
- * Presets typically use {@link "definePreset"} from `@mauve/azpipe-utils`
+ * Presets typically use {@link "definePreset"} from `@mauvezero/azpipe-utils`
  * for parameter typing.
  */
-export {};
+export { };

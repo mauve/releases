@@ -48,7 +48,7 @@ function usage(): void {
 azpipe release import --name <name> --org <org> --project <project> [options]
 
 Convert an existing classic-release JSON definition to TypeScript using
-@mauve/azpipe-releases builders. Either pass a JSON file (typically
+@mauvezero/azpipe-releases builders. Either pass a JSON file (typically
 exported via \`azpipe release get\`) or fetch live by name.
 
 Options:

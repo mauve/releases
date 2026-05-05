@@ -2,7 +2,7 @@
  * Task-name resolver.
  *
  * Maps marketplace task references to the typed factory function exposed by
- * `@mauve/azpipe-tasks`. The forward map (`'AzureCLI@2'` → `azureCLIV2`)
+ * `@mauvezero/azpipe-tasks`. The forward map (`'AzureCLI@2'` → `azureCLIV2`)
  * is used by the YAML converter; the inverse (GUID + major → factory) is used
  * by the release converter to undo `taskStepToWorkflowTask`.
  *
@@ -20,7 +20,7 @@ import { taskIds, type TaskIdEntry } from '@mauvezero/azpipe-tasks';
 export interface TaskMatch {
   /** Task ref like `'AzureCLI@2'`. */
   taskRef: string;
-  /** Factory name exported by `@mauve/azpipe-tasks`, e.g. `'azureCLIV2'`. */
+  /** Factory name exported by `@mauvezero/azpipe-tasks`, e.g. `'azureCLIV2'`. */
   factory: string;
   /** GUID. */
   taskId: string;

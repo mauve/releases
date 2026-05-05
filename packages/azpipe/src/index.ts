@@ -1,5 +1,5 @@
 /**
- * `@mauve/azpipe` — typesafe fluent builder for Azure Pipelines.
+ * `@mauvezero/azpipe` — typesafe fluent builder for Azure Pipelines.
  *
  * Public surface:
  *
@@ -12,15 +12,15 @@
  *   {@link task}, {@link stepTemplate}.
  * - Pipeline document types (re-exported from `./types`): {@link PipelineRoot},
  *   {@link Step}, {@link Variable}, {@link Pool}, {@link Resources}, etc.
- * - Validator + serializer (re-exported from `@mauve/azpipe-core`):
+ * - Validator + serializer (re-exported from `@mauvezero/azpipe-core`):
  *   {@link validatePipeline}, {@link toYaml}, {@link toJson},
  *   {@link PipelineValidationError}.
  *
  * For typed marketplace-task helpers (`azureCLIV2(...)`, `useNodeV1(...)`),
- * see `@mauve/azpipe-tasks`.
+ * see `@mauvezero/azpipe-tasks`.
  *
  * For `defineTemplate` / `extend` helpers used to build derived packages with
- * typed templates, see `@mauve/azpipe-utils`.
+ * typed templates, see `@mauvezero/azpipe-utils`.
  *
  * @packageDocumentation
  */

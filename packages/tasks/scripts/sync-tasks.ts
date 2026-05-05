@@ -37,7 +37,7 @@ function discover(): Discovered[] {
   if (!statSync(tasksDir, { throwIfNoEntry: false })) {
     throw new Error(
       `Submodule not initialized: ${tasksDir} not found.\n` +
-        `Run: git submodule update --init vendor/azure-pipelines-tasks`,
+      `Run: git submodule update --init vendor/azure-pipelines-tasks`,
     );
   }
   const out: Discovered[] = [];
@@ -121,7 +121,7 @@ function main(): void {
   writeFileSync(indexPath, generateIndexFile(emitted));
 
   // Emit task-ids.ts mapping `Name@Major` → { id, major } for the release
-  // workflow-task adapter in @mauve/azpipe-releases.
+  // workflow-task adapter in @mauvezero/azpipe-releases.
   const idEntries = live
     .filter((d) => d.taskJson.id && d.taskJson.name && typeof d.taskJson.version?.Major === 'number')
     .map((d) => ({

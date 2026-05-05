@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const cliBin = resolve(here, '../dist/bin.js');
 // Stage scratch files inside this package so node_modules resolution walks up
-// to the workspace root and finds @mauve/azpipe.
+// to the workspace root and finds @mauvezero/azpipe.
 const scratchRoot = resolve(here, '../.tmp');
 
 let dir: string;
@@ -27,9 +27,9 @@ describe('azpipe CLI', () => {
     writeFileSync(
       entry,
       `import { pipeline, script } from '@mauvezero/azpipe';\n` +
-        `export default pipeline()\n` +
-        `  .pool({ vmImage: 'ubuntu-latest' })\n` +
-        `  .job('a', j => j.step(script('echo hi')));\n`,
+      `export default pipeline()\n` +
+      `  .pool({ vmImage: 'ubuntu-latest' })\n` +
+      `  .job('a', j => j.step(script('echo hi')));\n`,
     );
     execFileSync('node', [cliBin, 'build', entry, '--out', out], { stdio: 'pipe' });
     const yml = readFileSync(out, 'utf8');
@@ -44,15 +44,15 @@ describe('azpipe CLI', () => {
     writeFileSync(
       yamlPath,
       `name: CI\n` +
-        `pool:\n  vmImage: ubuntu-latest\n` +
-        `jobs:\n` +
-        `  - job: build\n` +
-        `    steps:\n` +
-        `      - script: npm ci\n` +
-        `        displayName: Install\n` +
-        `      - task: UseNode@1\n` +
-        `        inputs:\n` +
-        `          version: 20.x\n`,
+      `pool:\n  vmImage: ubuntu-latest\n` +
+      `jobs:\n` +
+      `  - job: build\n` +
+      `    steps:\n` +
+      `      - script: npm ci\n` +
+      `        displayName: Install\n` +
+      `      - task: UseNode@1\n` +
+      `        inputs:\n` +
+      `          version: 20.x\n`,
     );
     execFileSync('node', [cliBin, 'build', 'import', yamlPath, '--out', tsPath], { stdio: 'pipe' });
     const ts = readFileSync(tsPath, 'utf8');

@@ -23,9 +23,9 @@ export interface GateSpec {
  * Build a single gate step (typed by its underlying task).
  *
  * Accepts either YAML-pipeline {@link "TaskStep"} objects (e.g. from
- * `useNodeV1(...)` in `@mauve/azpipe-tasks`) or pre-built
+ * `useNodeV1(...)` in `@mauvezero/azpipe-tasks`) or pre-built
  * {@link WorkflowTask} objects (e.g. from `calendarGateCheck(...)` in
- * `@mauve/custom`). TaskStep arguments are routed through
+ * `@mauvezero/custom`). TaskStep arguments are routed through
  * {@link "taskStepToWorkflowTask"}; WorkflowTask arguments pass through.
  */
 export function gate(name: string, ...steps: Array<TaskStep | WorkflowTask>): GateStep {

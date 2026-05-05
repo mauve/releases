@@ -130,7 +130,7 @@ export function publish(path: string, opts: Omit<PublishStep, 'publish'> = {}): 
 /**
  * Construct a {@link TaskStep} (marketplace-task invocation).
  *
- * Prefer the typed helpers in `@mauve/azpipe-tasks` (`azureCLIV2`,
+ * Prefer the typed helpers in `@mauvezero/azpipe-tasks` (`azureCLIV2`,
  * `useNodeV1`, ...) over this factory — they enforce per-task input shapes at
  * compile time and copy documentation from the upstream task definitions.
  * Use `task()` only for tasks the typed helpers don't cover (custom or

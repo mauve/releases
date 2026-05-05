@@ -20,7 +20,7 @@ The library is intentionally generic. Its primary purpose is to be the foundatio
 
 ### What it is not
 
-- Primarily a generator, not a parser — though `@mauve/azpipe-convert` /
+- Primarily a generator, not a parser — though `@mauvezero/azpipe-convert` /
   `azpipe build import` / `azpipe release import` will turn an existing
   `azure-pipelines.yml` or classic-release JSON into TypeScript when adopting
   the toolchain on an existing pipeline.
@@ -31,19 +31,19 @@ The library is intentionally generic. Its primary purpose is to be the foundatio
 
 A small monorepo (pnpm workspaces + turborepo, ESM-only, Node ≥ 20):
 
-| Package                       | Role                                                                |
-| ----------------------------- | ------------------------------------------------------------------- |
-| `@mauve/azpipe-core`     | Vendored schema, generated TS types, ajv validator, YAML serializer |
-| `@mauve/azpipe`          | Fluent `pipeline()` builder and step factories — the main API       |
-| `@mauve/azpipe-utils`    | `defineTemplate`, `extend`, merges, identity-aware diff engine, `PreDef` predefined-variable symbols |
-| `@mauve/azpipe-tasks`    | Typed function per non-deprecated task in `azure-pipelines-tasks`   |
-| `@mauve/azpipe-releases` | Typesafe builder for Azure DevOps Classic Release definitions       |
-| `@mauve/azpipe-releases-client` | REST client for releases (Entra auth, get/list/put, diff, push) |
-| `@mauve/azpipe-convert`  | Convert existing `azure-pipelines.yml` and classic-release JSON to TS |
-| `@mauve/custom`          | Mauve-only helpers (custom gates / tasks / presets) — currently CalendarGate |
-| `@mauve/azpipe-cli`      | `azpipe build`, `azpipe build import`, `azpipe release {get,diff,push,import}` commands |
+| Package                             | Role                                                                                                 |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `@mauvezero/azpipe-core`            | Vendored schema, generated TS types, ajv validator, YAML serializer                                  |
+| `@mauvezero/azpipe`                 | Fluent `pipeline()` builder and step factories — the main API                                        |
+| `@mauvezero/azpipe-utils`           | `defineTemplate`, `extend`, merges, identity-aware diff engine, `PreDef` predefined-variable symbols |
+| `@mauvezero/azpipe-tasks`           | Typed function per non-deprecated task in `azure-pipelines-tasks`                                    |
+| `@mauvezero/azpipe-releases`        | Typesafe builder for Azure DevOps Classic Release definitions                                        |
+| `@mauvezero/azpipe-releases-client` | REST client for releases (Entra auth, get/list/put, diff, push)                                      |
+| `@mauvezero/azpipe-convert`         | Convert existing `azure-pipelines.yml` and classic-release JSON to TS                                |
+| `@mauvezero/custom`                 | Mauve-only helpers (custom gates / tasks / presets) — currently CalendarGate                         |
+| `@mauvezero/azpipe-cli`             | `azpipe build`, `azpipe build import`, `azpipe release {get,diff,push,import}` commands              |
 
-Derived packages typically depend on `@mauve/azpipe` + `@mauve/azpipe-utils` and re-export typed building blocks for their consumers.
+Derived packages typically depend on `@mauvezero/azpipe` + `@mauvezero/azpipe-utils` and re-export typed building blocks for their consumers.
 
 ## Installing / running the CLI
 
@@ -65,7 +65,7 @@ node packages/cli/dist/bin.js release import --name web-release --org mauve --pr
 
 ```ts
 // pipeline.ts
-import { pipeline, script, task, checkout } from '@mauve/azpipe';
+import { pipeline, script, task, checkout } from '@mauvezero/azpipe';
 
 export default pipeline()
   .name('CI $(Date:yyyyMMdd).$(Rev:r)')
@@ -89,8 +89,8 @@ azpipe build pipeline.ts --out azure-pipelines.yml
 A typed task with autocomplete on every input (label, help text, picklist values, defaults all hover from `task.json`):
 
 ```ts
-import { pipeline } from '@mauve/azpipe';
-import { azureCLIV2, azureRMConnection, useNodeV1 } from '@mauve/azpipe-tasks';
+import { pipeline } from '@mauvezero/azpipe';
+import { azureCLIV2, azureRMConnection, useNodeV1 } from '@mauvezero/azpipe-tasks';
 
 export default pipeline()
   .pool({ vmImage: 'ubuntu-latest' })
@@ -115,7 +115,7 @@ A typed template:
 
 ```ts
 // templates.ts
-import { defineTemplate } from '@mauve/azpipe-utils';
+import { defineTemplate } from '@mauvezero/azpipe-utils';
 
 export const buildAndTest = defineTemplate({
   name: 'build-and-test',
@@ -142,8 +142,8 @@ export const buildAndTest = defineTemplate({
 
 ```ts
 // pipeline.ts
-import { pipeline } from '@mauve/azpipe';
-import { extend } from '@mauve/azpipe-utils';
+import { pipeline } from '@mauvezero/azpipe';
+import { extend } from '@mauvezero/azpipe-utils';
 import { buildAndTest } from './templates.js';
 
 export default pipeline()
@@ -164,8 +164,8 @@ Define release pipelines in TS using the same typed task helpers, then diff and 
 // release.ts
 import {
   releasePipeline, approval, buildArtifact,
-} from '@mauve/azpipe-releases';
-import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauve/azpipe-tasks';
+} from '@mauvezero/azpipe-releases';
+import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauvezero/azpipe-tasks';
 
 const web = buildArtifact({ alias: 'web', definitionId: 100, isPrimary: true });
 
@@ -205,7 +205,7 @@ if more than one is marked primary, and `UnknownArtifactAliasError` if a
 trigger references an alias no artifact registered.
 
 ```ts
-import { buildArtifact, gitArtifact, gitHubArtifact } from '@mauve/azpipe-releases';
+import { buildArtifact, gitArtifact, gitHubArtifact } from '@mauvezero/azpipe-releases';
 
 // Build pipeline. definitionId is the numeric build pipeline id —
 // find it in the URL of the build pipeline (.../_build?definitionId=N).
@@ -268,14 +268,14 @@ azpipe release get web-release --org mauve --project platform --out web-release.
 
 Authentication uses [`@azure/identity`'s `DefaultAzureCredential`](https://learn.microsoft.com/javascript/api/@azure/identity/defaultazurecredential) — managed identity → workload identity → `az` CLI → env vars. Locally, run `az login` and you're set.
 
-The same typed task helpers from `@mauve/azpipe-tasks` work in both YAML pipelines and Release definitions: the release-side adapter looks up each task's GUID from the generated catalog and emits the right `workflowTask` shape.
+The same typed task helpers from `@mauvezero/azpipe-tasks` work in both YAML pipelines and Release definitions: the release-side adapter looks up each task's GUID from the generated catalog and emits the right `workflowTask` shape.
 
 ## Predefined variables
 
 Type predefined variables instead of typing strings. Hovering an entry in your editor shows the same description Microsoft publishes:
 
 ```ts
-import { PreDef, releaseArtifactVar } from '@mauve/azpipe-utils';
+import { PreDef, releaseArtifactVar } from '@mauvezero/azpipe-utils';
 
 PreDef.Pipeline.Build.SourceBranch       // → '$(Build.SourceBranch)'
 PreDef.Release.Release.ReleaseId         // → '$(Release.ReleaseId)'

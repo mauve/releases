@@ -1,7 +1,7 @@
 /**
- * `@mauve/azpipe-releases-client` — REST client for Azure DevOps Classic
- * Releases. Pairs with `@mauve/azpipe-releases` (definition types) and
- * `@mauve/azpipe-utils/diff` (the diff engine).
+ * `@mauvezero/azpipe-releases-client` — REST client for Azure DevOps Classic
+ * Releases. Pairs with `@mauvezero/azpipe-releases` (definition types) and
+ * `@mauvezero/azpipe-utils/diff` (the diff engine).
  *
  * Public surface:
  * - {@link ReleaseClient} — get/list/put against the REST API.

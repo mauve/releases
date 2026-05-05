@@ -245,7 +245,7 @@ export class PipelineBuilder {
    * Two forms are supported:
    * - `jobTemplate('templates/build.yml', { node: '20.x' })` — path + parameters.
    * - `jobTemplate(extend(typedTemplate, { ... }))` — pre-built reference object,
-   *   typically from {@link "extend"} in `@mauve/azpipe-utils`.
+   *   typically from {@link "extend"} in `@mauvezero/azpipe-utils`.
    */
   jobTemplate(template: string, parameters?: Record<string, unknown>): this;
   jobTemplate(ref: { template: string; parameters?: Record<string, unknown> }): this;
@@ -264,7 +264,7 @@ export class PipelineBuilder {
   /**
    * Add a stage-template reference object. Use this overload when you already
    * have an `{ template, parameters }` value (e.g. from
-   * {@link "extend"} in `@mauve/azpipe-utils`); for path+parameters
+   * {@link "extend"} in `@mauvezero/azpipe-utils`); for path+parameters
    * call {@link PipelineBuilder.stageTemplate} instead.
    */
   stageTemplateRef(ref: { template: string; parameters?: Record<string, unknown> }): this {

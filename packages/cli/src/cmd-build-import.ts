@@ -42,7 +42,7 @@ function usage(): void {
   console.log(`azpipe build import <azure-pipelines.yml> [options]
 
 Convert an existing Azure Pipelines YAML file to TypeScript that uses
-@mauve/azpipe builders.
+@mauvezero/azpipe builders.
 
 Options:
   -o, --out <file>         Entry output file (default: pipeline.ts)

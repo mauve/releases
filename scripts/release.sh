@@ -5,7 +5,7 @@
 # e.g.:   ./scripts/release.sh 0.1.0
 #
 # What it does:
-#   1. Bumps every @mauve/* package.json to the given version.
+#   1. Bumps every @mauvezero/* package.json to the given version.
 #   2. Opens CHANGELOG.md in $EDITOR so you can rename `[Unreleased]` to
 #      `[<version>] - <today>` and add a fresh `[Unreleased]` block.
 #   3. Commits the changes and tags `v<version>`.
@@ -35,8 +35,8 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # 1. Bump versions across the publishables.
-echo "Bumping @mauve/* to $VERSION ..."
-pnpm --filter "@mauve/*" exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+echo "Bumping @mauvezero/* to $VERSION ..."
+pnpm --filter "@mauvezero/*" exec npm version "$VERSION" --no-git-tag-version --allow-same-version
 
 # 2. CHANGELOG editing — human's job.
 echo

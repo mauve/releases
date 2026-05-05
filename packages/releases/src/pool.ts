@@ -103,7 +103,7 @@ export type ReleasePoolSpec =
  * wire.
  */
 export const UNRESOLVED_QUEUE: unique symbol = Symbol.for(
-  '@mauve/azpipe-releases#unresolvedQueue',
+  '@mauvezero/azpipe-releases#unresolvedQueue',
 );
 
 export interface UnresolvedQueueRef {
