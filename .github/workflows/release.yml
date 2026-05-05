@@ -88,4 +88,4 @@ jobs:
           fi
 
       - name: Publish packages to npm
-        run: pnpm --filter "@mauve/*" publish --access public
+        run: pnpm --filter "@mauve/*" publish --access public --provenance
