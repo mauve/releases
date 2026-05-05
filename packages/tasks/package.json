@@ -1,6 +1,6 @@
 {
   "name": "@mauvezero/azpipe-tasks",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typed function helpers for every (non-deprecated) task in microsoft/azure-pipelines-tasks.",
   "type": "module",
   "main": "./dist/index.js",

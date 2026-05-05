@@ -1,6 +1,6 @@
 {
   "name": "@mauvezero/azpipe-cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CLI for compiling TS-authored Azure Pipelines into YAML/JSON.",
   "type": "module",
   "main": "./dist/bin.js",

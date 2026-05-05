@@ -10,11 +10,17 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-06
+
 ### Added
 
 - **`@mauvezero/azpipe`**: `DownloadStep.patterns` now accepts `string | string[]`. An array of globs is more idiomatic in TypeScript than a newline-delimited string.
 - **`@mauvezero/azpipe-core`**: `toYaml` / `toJson` automatically join a `patterns: string[]` on download steps into the newline-delimited string Azure Pipelines expects, so both forms round-trip correctly.
 - **`@mauvezero/azpipe-convert`**: YAML→TS conversion of `download` steps with more than one glob pattern now emits a `string[]` array instead of a raw newline-delimited template literal.
+
+### Changed
+
+- All packages renamed from `@mauve/*` to `@mauvezero/*` scope.
 
 ## [0.2.0] - 2026-05-05
 

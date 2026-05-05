@@ -1,6 +1,6 @@
 {
   "name": "@mauvezero/azpipe-utils",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Composition helpers for building derived Azure Pipelines packages on top of @mauvezero/azpipe.",
   "type": "module",
   "main": "./dist/index.js",
