@@ -5,9 +5,9 @@
 #   2. Local: git push && git push --tags  →   this workflow runs on the v* tag.
 #
 # Publishing:
-#   Requires an npm automation token stored as the NPM_TOKEN repository secret.
-#   pnpm must handle publish (to rewrite workspace:* deps); it does not support
-#   npm's OIDC Trusted Publishing flow, so a stored token is required.
+#   Uses npm Trusted Publishing (OIDC) — no token storage required.
+#   Requires npm 11.5+ (provided by Node 24). Each package must have its
+#   own Trusted Publisher configured on npmjs.com pointing to this workflow.
 
 name: Release
 
@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   publish:
@@ -37,7 +38,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
@@ -89,6 +90,4 @@ jobs:
           fi
 
       - name: Publish packages to npm
-        run: pnpm --filter "@mauvezero/*" publish --access public --provenance --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm --filter "@mauvezero/*" publish --access public --no-git-checks

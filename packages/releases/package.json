@@ -1,6 +1,10 @@
 {
   "name": "@mauvezero/azpipe-releases",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mauve/releases.git"
+  },
   "description": "Typesafe builders for Azure DevOps Classic Release definitions.",
   "type": "module",
   "main": "./dist/index.js",

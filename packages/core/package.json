@@ -1,6 +1,10 @@
 {
   "name": "@mauvezero/azpipe-core",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mauve/releases.git"
+  },
   "description": "Schema-derived types, runtime validation, and YAML/JSON serialization for Azure Pipelines.",
   "type": "module",
   "main": "./dist/index.js",

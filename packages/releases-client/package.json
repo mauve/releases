@@ -1,6 +1,10 @@
 {
   "name": "@mauvezero/azpipe-releases-client",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mauve/releases.git"
+  },
   "description": "REST client for Azure DevOps Classic Releases — get, list, diff, push.",
   "type": "module",
   "main": "./dist/index.js",

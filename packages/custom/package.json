@@ -1,6 +1,10 @@
 {
   "name": "@mauvezero/custom",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mauve/releases.git"
+  },
   "description": "Mauve-only custom helpers (gates, tasks, presets) for the azpipe suite.",
   "type": "module",
   "main": "./dist/index.js",
