@@ -12,9 +12,9 @@
     "typecheck": "turbo run typecheck",
     "lint": "eslint . --max-warnings 0",
     "clean": "turbo run clean && rm -rf node_modules .turbo",
-    "sync-schema": "pnpm --filter @mauve/azpipe-core sync-schema",
-    "sync-tasks": "pnpm --filter @mauve/azpipe-tasks sync-tasks",
-    "sync-vars": "pnpm --filter @mauve/azpipe-utils sync-vars"
+    "sync-schema": "pnpm --filter @mauvezero/azpipe-core sync-schema",
+    "sync-tasks": "pnpm --filter @mauvezero/azpipe-tasks sync-tasks",
+    "sync-vars": "pnpm --filter @mauvezero/azpipe-utils sync-vars"
   },
   "devDependencies": {
     "turbo": "^2.3.3",

@@ -18,9 +18,9 @@ import { rewriteTree, rewriteString } from '../codegen/predef.js';
 import { findTaskFactoryByRef } from '../codegen/tasks.js';
 import { resolveInputName, getConnectionKind, connectionFactoryName } from '../codegen/task-aliases.js';
 
-const AZPIPE = '@mauve/azpipe';
-const UTILS = '@mauve/azpipe-utils';
-const TASKS = '@mauve/azpipe-tasks';
+const AZPIPE = '@mauvezero/azpipe';
+const UTILS = '@mauvezero/azpipe-utils';
+const TASKS = '@mauvezero/azpipe-tasks';
 
 export interface TemplateEmitInput {
   /** Path the template was referenced as in the parent (`templates/foo.yml`). */

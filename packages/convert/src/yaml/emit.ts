@@ -41,9 +41,9 @@ import { rewriteTree } from '../codegen/predef.js';
 import { findTaskFactoryByRef } from '../codegen/tasks.js';
 import { camelCase, IdentifierScope } from '../codegen/identifiers.js';
 
-const AZPIPE = '@mauve/azpipe';
-const TASKS = '@mauve/azpipe-tasks';
-const UTILS = '@mauve/azpipe-utils';
+const AZPIPE = '@mauvezero/azpipe';
+const TASKS = '@mauvezero/azpipe-tasks';
+const UTILS = '@mauvezero/azpipe-utils';
 
 /** Result of converting a single YAML pipeline. */
 export interface YamlEmitResult {

@@ -29,10 +29,10 @@ import { rewriteTree } from '../codegen/predef.js';
 import { findTaskFactoryByGuid } from '../codegen/tasks.js';
 import { camelCase, IdentifierScope } from '../codegen/identifiers.js';
 
-const RELEASES = '@mauve/azpipe-releases';
-const TASKS = '@mauve/azpipe-tasks';
-const UTILS = '@mauve/azpipe-utils';
-const AZPIPE = '@mauve/azpipe';
+const RELEASES = '@mauvezero/azpipe-releases';
+const TASKS = '@mauvezero/azpipe-tasks';
+const UTILS = '@mauvezero/azpipe-utils';
+const AZPIPE = '@mauvezero/azpipe';
 
 export interface ReleaseEmitOptions {
   /** Org local field — not part of the wire definition. */
