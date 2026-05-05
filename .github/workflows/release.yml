@@ -88,4 +88,4 @@ jobs:
           fi
 
       - name: Publish packages to npm
-        run: pnpm --filter "@mauvezero/*" publish --access public --provenance
+        run: pnpm --filter "@mauvezero/*" publish --access public --provenance --no-git-checks
