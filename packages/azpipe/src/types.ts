@@ -249,8 +249,12 @@ export interface DownloadStep {
   download: 'current' | 'none' | string;
   /** Specific artifact name; omit to download all. */
   artifact?: string;
-  /** Glob pattern to filter artifact contents. */
-  patterns?: string;
+  /**
+   * Glob pattern(s) to filter artifact contents.
+   * Supply a single string or an array of strings; arrays are joined with
+   * newlines before serialization so both forms produce identical YAML output.
+   */
+  patterns?: string | string[];
   displayName?: string;
   condition?: string;
   enabled?: boolean;
@@ -273,7 +277,7 @@ export interface PublishStep {
 
 /**
  * Reference to a marketplace task. Prefer the typed helpers in
- * `@mauve/azpipe-tasks` over building this object directly; they enforce
+ * `@mauvezero/azpipe-tasks` over building this object directly; they enforce
  * the input shape per task.
  *
  * @see https://learn.microsoft.com/azure/devops/pipelines/yaml-schema/steps-task
@@ -479,13 +483,13 @@ export interface JobObject extends JobInit {
  */
 export type DeploymentStrategy =
   | {
-      runOnce: {
-        deploy?: { steps: Step[] };
-        preDeploy?: { steps: Step[] };
-        postRouteTraffic?: { steps: Step[] };
-        on?: { failure?: { steps: Step[] }; success?: { steps: Step[] } };
-      };
-    }
+    runOnce: {
+      deploy?: { steps: Step[] };
+      preDeploy?: { steps: Step[] };
+      postRouteTraffic?: { steps: Step[] };
+      on?: { failure?: { steps: Step[] }; success?: { steps: Step[] } };
+    };
+  }
   | { canary: Record<string, unknown> }
   | { rolling: Record<string, unknown> };
 

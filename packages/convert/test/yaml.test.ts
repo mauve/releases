@@ -196,4 +196,27 @@ jobs:
     expect(tpl).toContain('defineTemplate');
     expect(tpl).toContain("kind: 'jobs'");
   });
+
+  it('converts a download step with multiple patterns into an array', async () => {
+    const yaml = `
+pool:
+  vmImage: ubuntu-latest
+jobs:
+  - job: download
+    steps:
+      - download: current
+        artifact: drop
+        patterns: |
+          **/*.js
+          **/*.ts
+`;
+    const result = await yamlToTs(yaml, { prettier: false });
+    const src = result.files[0]!.contents;
+    expect(src).toContain('download(');
+    // Should emit an array, not a raw newline-delimited string
+    expect(src).toContain("'**/*.js'");
+    expect(src).toContain("'**/*.ts'");
+    expect(src).not.toMatch(/patterns:\s*`/);
+    expect(src).not.toMatch(/patterns:\s*'[^']*\\n/);
+  });
 });

@@ -338,6 +338,10 @@ function renderDownloadStep(step: DownloadStep, ctx: Ctx): string {
   const src = step.download;
   const opts: Record<string, unknown> = { ...step };
   delete opts['download'];
+  // Split newline-delimited glob strings into an array for idiomatic TypeScript.
+  if (typeof opts['patterns'] === 'string' && opts['patterns'].includes('\n')) {
+    opts['patterns'] = opts['patterns'].split('\n').map((s) => s.trim()).filter(Boolean);
+  }
   if (Object.keys(opts).length === 0) return `download(${valueArg(src)})`;
   return `download(${valueArg(src)}, ${valueArg(opts)})`;
 }
