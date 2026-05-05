@@ -5,8 +5,9 @@
 #   2. Local: git push && git push --tags  →   this workflow runs on the v* tag.
 #
 # Publishing:
-#   Uses npm Trusted Publishing (OIDC) — no token storage required.
-#   Set up at https://www.npmjs.com/settings/your-username/access-tokens
+#   Requires an npm automation token stored as the NPM_TOKEN repository secret.
+#   pnpm must handle publish (to rewrite workspace:* deps); it does not support
+#   npm's OIDC Trusted Publishing flow, so a stored token is required.
 
 name: Release
 
@@ -16,7 +17,6 @@ on:
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   publish:
@@ -88,13 +88,7 @@ jobs:
               --notes-file /tmp/release-notes.md
           fi
 
-      - name: Get OIDC token for npm Trusted Publishing
-        run: |
-          TOKEN=$(curl -s \
-            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm" \
-            | jq -r '.value')
-          echo "NODE_AUTH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-
       - name: Publish packages to npm
         run: pnpm --filter "@mauvezero/*" publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
