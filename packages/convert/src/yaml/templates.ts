@@ -14,10 +14,13 @@ import {
   isRaw,
   type RawExpr,
 } from '../codegen/printer.js';
-import { rewriteTree } from '../codegen/predef.js';
+import { rewriteTree, rewriteString } from '../codegen/predef.js';
+import { findTaskFactoryByRef } from '../codegen/tasks.js';
+import { resolveInputName, getConnectionKind, connectionFactoryName } from '../codegen/task-aliases.js';
 
 const AZPIPE = '@mauve/azpipe';
 const UTILS = '@mauve/azpipe-utils';
+const TASKS = '@mauve/azpipe-tasks';
 
 export interface TemplateEmitInput {
   /** Path the template was referenced as in the parent (`templates/foo.yml`). */
@@ -129,9 +132,11 @@ const PARAM_RE = /\$\{\{\s*parameters\.([A-Za-z_$][A-Za-z0-9_$]*)\s*\}\}/g;
 function substituteParameterRefs(value: unknown, paramNames: string[]): unknown {
   if (isRaw(value)) return value;
   if (typeof value === 'string') {
-    if (!value.includes('${{')) return value;
-    const replaced = stringWithParamRefs(value, paramNames);
-    return replaced ?? value;
+    // Strip trailing newlines from YAML block scalars (|, |+).
+    const trimmed = value.endsWith('\n') ? value.replace(/\n+$/, '') : value;
+    if (!trimmed.includes('${{')) return trimmed;
+    const replaced = stringWithParamRefs(trimmed, paramNames);
+    return replaced ?? trimmed;
   }
   if (Array.isArray(value)) return value.map((v) => substituteParameterRefs(v, paramNames));
   if (typeof value === 'object' && value !== null) {
@@ -155,26 +160,60 @@ function stringWithParamRefs(text: string, paramNames: string[]): RawExpr | unde
     return undefined;
   }
   // Otherwise produce a template literal stitched from idents and raw text.
+  // Literal segments are also checked for PreDef tokens like $(Build.SourceBranch).
   let cursor = 0;
   let out = '';
   let any = false;
+  const usedNs = new Set<string>();
   for (const m of matches) {
     const name = m[1]!;
     if (!known.has(name)) continue;
     const start = m.index ?? 0;
     const end = start + m[0].length;
-    if (start > cursor) out += escTemplate(text.slice(cursor, start));
+    if (start > cursor) out += escTemplateWithPredef(text.slice(cursor, start), usedNs);
     out += '${' + safeIdent(name) + '}';
     cursor = end;
     any = true;
   }
   if (!any) return undefined;
-  if (cursor < text.length) out += escTemplate(text.slice(cursor));
+  if (cursor < text.length) out += escTemplateWithPredef(text.slice(cursor), usedNs);
   return raw('`' + out + '`');
 }
 
 function escTemplate(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+}
+
+/** Escape for template literal, but also rewrite $(Token) → ${PreDef...} interpolations. */
+const PREDEF_TOKEN_RE = /\$\(([A-Za-z][A-Za-z0-9_.]*)\)/g;
+
+function escTemplateWithPredef(s: string, usedNs: Set<string>): string {
+  const r = rewriteString(s);
+  if (!r) {
+    // No known PreDef tokens — just escape normally.
+    return escTemplate(s);
+  }
+  // rewriteString returns a RawExpr like `\`...\`` — we need the inner content
+  // (without the wrapping backticks) since we're already building a template literal.
+  for (const ns of r.usedNamespaces) usedNs.add(ns);
+  const inner = r.expr.source;
+  // If it's a bare reference (no backticks), wrap as interpolation.
+  if (!inner.startsWith('`')) {
+    return '${' + inner + '}';
+  }
+  // It's a template literal `...` — strip the wrapping backticks and use the inner content directly.
+  return inner.slice(1, -1);
+}
+
+/** Recursively check if any RawExpr in the tree references PreDef. */
+function containsPredefRef(value: unknown): boolean {
+  if (isRaw(value)) return value.source.includes('PreDef.');
+  if (typeof value === 'string') return false;
+  if (Array.isArray(value)) return value.some(containsPredefRef);
+  if (typeof value === 'object' && value !== null) {
+    return Object.values(value as Record<string, unknown>).some(containsPredefRef);
+  }
+  return false;
 }
 
 const RESERVED = new Set([
@@ -221,6 +260,144 @@ function tsType(paramType: string | undefined): string {
   }
 }
 
+// ---- Step transform: convert raw task objects into typed factory calls ------
+
+/**
+ * Transform step objects in a body array into typed factory call RawExprs.
+ *
+ * A step like `{ task: 'AzureCLI@2', inputs: { azureSubscription: ... }, displayName: '...' }`
+ * becomes a RawExpr for `azureCLIV2({ connectedServiceNameARM: azureSubscription }, { displayName: '...' })`.
+ */
+function transformSteps(bodyArray: unknown, imports: ImportCollector, typedParams?: Map<string, string>): unknown {
+  if (!Array.isArray(bodyArray)) return bodyArray;
+  return bodyArray.map((step) => transformStep(step, imports, typedParams));
+}
+
+function transformStep(step: unknown, imports: ImportCollector, typedParams?: Map<string, string>): unknown {
+  if (step === null || typeof step !== 'object' || isRaw(step)) return step;
+  const obj = step as Record<string, unknown>;
+
+  // Script-like steps: script, bash, pwsh, powershell
+  for (const factory of ['script', 'bash', 'pwsh', 'powershell'] as const) {
+    if (factory in obj) {
+      imports.add(AZPIPE, factory);
+      const body = obj[factory];
+      const opts: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (k !== factory) opts[k] = v;
+      }
+      const bodyStr = isRaw(body) ? body.source : expr(body, 0);
+      const optsStr = Object.keys(opts).length > 0 ? `, ${expr(opts, 4)}` : '';
+      return raw(`${factory}(${bodyStr}${optsStr})`);
+    }
+  }
+
+  // Checkout step
+  if ('checkout' in obj) {
+    imports.add(AZPIPE, 'checkout');
+    const ref = obj['checkout'];
+    const opts: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k !== 'checkout') opts[k] = v;
+    }
+    const refStr = isRaw(ref) ? ref.source : expr(ref, 0);
+    const optsStr = Object.keys(opts).length > 0 ? `, ${expr(opts, 4)}` : '';
+    return raw(`checkout(${refStr}${optsStr})`);
+  }
+
+  // Only transform task steps (objects with a string `task` key)
+  if (typeof obj['task'] !== 'string') return step;
+
+  const taskRef = obj['task'] as string;
+  const match = findTaskFactoryByRef(taskRef);
+  if (!match) {
+    // Unknown task — emit raw task() call
+    imports.add(AZPIPE, 'task');
+    const inputs = obj['inputs'] as Record<string, unknown> | undefined;
+    const opts: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k !== 'task' && k !== 'inputs') opts[k] = v;
+    }
+    if (inputs) Object.assign(opts, { inputs });
+    const optsStr = Object.keys(opts).length > 0 ? `, ${expr(opts, 2)}` : '';
+    return raw(`task(${strLit(taskRef)}${optsStr})`);
+  }
+
+  // Known task — use typed factory
+  imports.add(TASKS, match.factory);
+
+  const inputs = obj['inputs'] as Record<string, unknown> | undefined;
+  const opts: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (k !== 'task' && k !== 'inputs') opts[k] = v;
+  }
+
+  // Transform inputs: resolve aliases and wrap connection values
+  const transformedInputs = transformTaskInputs(taskRef, inputs ?? {}, imports, typedParams);
+
+  const inputsStr = expr(transformedInputs, 2);
+  const optsStr = Object.keys(opts).length > 0 ? `, ${expr(opts, 2)}` : '';
+  return raw(`${match.factory}(${inputsStr}${optsStr})`);
+}
+
+/**
+ * Transform task inputs: resolve YAML aliases to canonical names and wrap
+ * connection-typed values in their branded factory function.
+ *
+ * If a parameter is already typed as the connection type (via typeOverrides),
+ * it's passed through directly without wrapping.
+ */
+function transformTaskInputs(
+  taskRef: string,
+  inputs: Record<string, unknown>,
+  imports: ImportCollector,
+  typedParams?: Map<string, string>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [yamlName, value] of Object.entries(inputs)) {
+    const canonicalName = resolveInputName(taskRef, yamlName);
+    const connKind = getConnectionKind(taskRef, canonicalName);
+    if (connKind) {
+      // Check if the value is a bare parameter ref that's already typed as the connection
+      if (isRaw(value)) {
+        const paramMatch = /^(\w+) as unknown as string$/.exec(value.source);
+        if (paramMatch && typedParams?.has(paramMatch[1]!)) {
+          // Parameter is already branded — pass directly (strip the cast)
+          result[canonicalName] = raw(paramMatch[1]!);
+          continue;
+        }
+      }
+      // Wrap the value in a connection factory call
+      const factory = connectionFactoryName(connKind);
+      imports.add(TASKS, factory);
+      result[canonicalName] = wrapWithConnectionFactory(value, factory);
+    } else {
+      result[canonicalName] = value;
+    }
+  }
+  return result;
+}
+
+/**
+ * Wrap a value with a connection factory call.
+ * If the value is a RawExpr (parameter reference), wrap the expression.
+ * If it's a string literal, wrap it quoted.
+ */
+function wrapWithConnectionFactory(value: unknown, factory: string): RawExpr {
+  if (isRaw(value)) {
+    // value.source is something like `azureSubscription as unknown as string`
+    // or a template literal. Strip the ` as unknown as string` cast if present,
+    // since the connection factory provides the correct type.
+    const src = value.source.replace(/ as unknown as string$/, '');
+    return raw(`${factory}(${src})`);
+  }
+  if (typeof value === 'string') {
+    return raw(`${factory}(${strLit(value)})`);
+  }
+  // Fallback: render the value and wrap
+  return raw(`${factory}(${expr(value, 0)})`);
+}
+
 /** Result of inline template emission — includes whether we fell back to defineTemplate. */
 export interface InlineTemplateEmitResult extends TemplateEmitResult {
   /** True when the template had complex expressions that couldn't be fully converted. */
@@ -261,22 +438,33 @@ export function emitInlineTemplateSource(input: TemplateEmitInput): InlineTempla
   else if (kind === 'stages') imports.add(AZPIPE, 'AnyStage');
 
   // Substitute ${{ parameters.x }} with bare identifiers.
+  // This also rewrites $(PreDef) tokens inside template literals.
   const paramNames = params.map((p) => p.name);
   const bodyTransformed = substituteParameterRefs(body, paramNames);
 
   // Handle ${{ if }} and ${{ each }} expressions in arrays.
   const bodyWithExpressions = convertExpressions(bodyTransformed, paramNames);
 
-  // Apply PreDef rewriting.
+  // Apply PreDef rewriting (catches remaining $(Token) strings not inside RawExprs).
   const { value: bodyWithPredef, usedNamespaces } = rewriteTree(bodyWithExpressions);
-  if (usedNamespaces.size > 0) imports.add(UTILS, 'PreDef');
+  // Also check if substituteParameterRefs embedded any PreDef refs in template literals.
+  if (usedNamespaces.size > 0 || containsPredefRef(bodyWithPredef)) {
+    imports.add(UTILS, 'PreDef');
+  }
 
   // Build the function parameter signature.
-  const paramSig = buildParamSignature(params);
+  // First detect parameters used as connection inputs to override their types.
+  const paramTypeOverrides = kind === 'steps'
+    ? detectConnectionParams(bodyWithPredef, imports)
+    : new Map<string, string>();
+  const paramSig = buildParamSignature(params, paramTypeOverrides);
 
   // Extract the body array (jobs/steps/stages).
   const bodyArray = (bodyWithPredef as Record<string, unknown>)[kind];
   const actualReturnType = kind === 'jobs' ? 'AnyJob[]' : kind === 'stages' ? 'AnyStage[]' : rtType;
+
+  // Transform task steps into typed factory calls (only for step templates).
+  const finalBody = kind === 'steps' ? transformSteps(bodyArray, imports, paramTypeOverrides) : bodyArray;
 
   const todoComment = complexity === 'too-complex'
     ? '// TODO: This template contains complex ${{ }} expressions that need manual conversion.\n'
@@ -286,7 +474,7 @@ export function emitInlineTemplateSource(input: TemplateEmitInput): InlineTempla
     imports.render() + '\n\n' +
     todoComment +
     `export function ${input.identifier}(${paramSig}): ${actualReturnType} {\n` +
-    `  return ${expr(bodyArray, 2)};\n` +
+    `  return ${expr(finalBody, 2)};\n` +
     `}\n`;
 
   return {
@@ -296,8 +484,48 @@ export function emitInlineTemplateSource(input: TemplateEmitInput): InlineTempla
   };
 }
 
+/**
+ * Detect parameters that flow into service connection inputs.
+ * Returns a map of paramName → branded type name (e.g. 'AzureRMConnection').
+ */
+function detectConnectionParams(body: unknown, imports: ImportCollector): Map<string, string> {
+  const overrides = new Map<string, string>();
+  if (typeof body !== 'object' || body === null) return overrides;
+
+  const bodyObj = body as Record<string, unknown>;
+  const steps = bodyObj['steps'];
+  if (!Array.isArray(steps)) return overrides;
+
+  for (const step of steps) {
+    if (step === null || typeof step !== 'object' || isRaw(step)) continue;
+    const obj = step as Record<string, unknown>;
+    if (typeof obj['task'] !== 'string') continue;
+
+    const taskRef = obj['task'] as string;
+    const inputs = obj['inputs'] as Record<string, unknown> | undefined;
+    if (!inputs) continue;
+
+    for (const [yamlName, value] of Object.entries(inputs)) {
+      // Check if this value is a bare parameter reference (RawExpr like `paramName as unknown as string`)
+      if (!isRaw(value)) continue;
+      const paramMatch = /^(\w+) as unknown as string$/.exec(value.source);
+      if (!paramMatch) continue;
+
+      const paramName = paramMatch[1]!;
+      const canonicalName = resolveInputName(taskRef, yamlName);
+      const connKind = getConnectionKind(taskRef, canonicalName);
+      if (connKind) {
+        const typeName = connKind.charAt(0).toUpperCase() + connKind.slice(1) + 'Connection';
+        overrides.set(paramName, typeName);
+        imports.add(TASKS, typeName);
+      }
+    }
+  }
+  return overrides;
+}
+
 /** Build a TypeScript function parameter with destructuring and defaults. */
-function buildParamSignature(params: TemplateParameter[]): string {
+function buildParamSignature(params: TemplateParameter[], typeOverrides?: Map<string, string>): string {
   if (params.length === 0) return '';
 
   const required: string[] = [];
@@ -305,7 +533,6 @@ function buildParamSignature(params: TemplateParameter[]): string {
 
   for (const p of params) {
     const name = safeIdent(p.name);
-    const type = tsType(p.type);
     if (p.default !== undefined) {
       optional.push(`${name} = ${expr(p.default, 0)}`);
     } else {
@@ -316,7 +543,7 @@ function buildParamSignature(params: TemplateParameter[]): string {
   // Build the type annotation for the parameter object.
   const typeProps = params.map((p) => {
     const name = safeIdent(p.name);
-    const type = tsType(p.type);
+    const type = typeOverrides?.get(p.name) ?? tsType(p.type);
     const isOptional = p.default !== undefined;
     return `${name}${isOptional ? '?' : ''}: ${type}`;
   });

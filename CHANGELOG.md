@@ -12,9 +12,24 @@ package to `X.Y.Z` together.
 
 ### Added
 
+- **`@mauve/azpipe`**: `.jobs(jobs)` method on `StageBuilder` for adding pre-built job objects.
+- **`@mauve/azpipe`**: `.stages(stages)` and `.jobs(jobs)` methods on `PipelineBuilder` for adding pre-built stage/job objects.
+- **`@mauve/azpipe-convert`**: `emitInlineTemplateSource()` — converts YAML templates to plain TypeScript functions returning `Step[]`/`AnyJob[]`/`AnyStage[]` instead of `defineTemplate`/`extend`.
+- **`@mauve/azpipe-convert`**: Best-effort conversion of `${{ if eq(parameters.x, val) }}` array items to TypeScript conditional spreads (`...(x === val ? [...] : [])`).
+- **`@mauve/azpipe-convert`**: Best-effort conversion of `${{ each item in parameters.list }}` to spread of the parameter array.
+- **`@mauve/azpipe-convert`**: Inline template step transform — emits typed task factory calls (e.g. `azureCLIV2(...)`) instead of raw `{ task: 'AzureCLI@2' }` object literals, with YAML input alias resolution and branded service-connection parameter types.
+- **`@mauve/azpipe-convert`**: Script-like steps (`bash`, `script`, `pwsh`, `powershell`) and `checkout` steps in templates are emitted as builder function calls.
+- **`@mauve/azpipe-tasks`**: `taskConnectionInputs` metadata export mapping task refs to their connection-typed inputs.
+- **`@mauve/azpipe-cli`**: `--no-inline-templates` flag on `azpipe build import` to opt out of inline function emission and use the legacy `defineTemplate`/`extend` output.
+
 ### Changed
 
+- **`@mauve/azpipe-convert`**: `azpipe build import` now emits templates as plain TS functions by default. Call sites use `.steps(fn())`, `.jobs(fn())`, `.stages(fn())` instead of `.jobTemplate(extend(tpl, params))`.
+- **`@mauve/azpipe-convert`**: Templates with complex `${{ }}` expressions that can't be converted (e.g. `${{ if }}` in non-array object keys) are still emitted as functions but include a `// TODO` comment and a CLI warning.
+
 ### Fixed
+
+- **`@mauve/azpipe-convert`**: Fixed template file path generation when importing YAML files to a different output directory.
 
 ### Removed
 
