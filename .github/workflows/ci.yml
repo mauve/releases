@@ -1,0 +1,63 @@
+# Build, test, typecheck, lint, example smoke-tests.
+#
+# Runs on every PR targeting master and every push to master.
+# Publish + GitHub-release happens in release.yml on a v* tag push.
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# A newer commit on the same PR / branch supersedes any in-flight run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build / test / typecheck / lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (no submodules — sync-tasks isn't run in CI)
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages (tsc -b)
+        run: pnpm -r build
+
+      - name: Run vitest
+        run: pnpm -r test
+
+      - name: Typecheck (tsc --noEmit)
+        run: pnpm -r typecheck
+
+      - name: ESLint (--max-warnings 0)
+        run: pnpm lint
+
+      - name: Smoke-check examples/minimal
+        run: pnpm --filter @example/minimal exec tsc --noEmit
+
+      - name: Smoke-check examples/release-minimal
+        run: pnpm --filter @example/release-minimal exec tsc --noEmit

@@ -1,0 +1,29 @@
+{
+  "name": "releases",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "sync-schema": "pnpm --filter @mauve/azpipe-core sync-schema",
+    "sync-tasks": "pnpm --filter @mauve/azpipe-tasks sync-tasks",
+    "sync-vars": "pnpm --filter @mauve/azpipe-utils sync-vars"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "@types/node": "^22.10.10",
+    "tsx": "^4.19.2",
+    "eslint": "^9.18.0",
+    "@eslint/js": "^9.18.0",
+    "typescript-eslint": "^8.21.0"
+  }
+}

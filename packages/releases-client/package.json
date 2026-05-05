@@ -1,0 +1,33 @@
+{
+  "name": "@mauve/azpipe-releases-client",
+  "version": "0.1.0",
+  "description": "REST client for Azure DevOps Classic Releases — get, list, diff, push.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.5.0",
+    "@mauve/azpipe-releases": "workspace:*",
+    "@mauve/azpipe-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "msw": "^2.7.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@example/release-minimal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "diff": "node ../../packages/cli/dist/bin.js release diff release.ts",
+    "push": "node ../../packages/cli/dist/bin.js release push release.ts",
+    "push:dry": "node ../../packages/cli/dist/bin.js release push release.ts --dry-run"
+  },
+  "dependencies": {
+    "@mauve/azpipe-releases": "workspace:*",
+    "@mauve/azpipe-tasks": "workspace:*",
+    "@mauve/azpipe-utils": "workspace:*",
+    "@mauve/azpipe-cli": "workspace:*",
+    "@mauve/custom": "workspace:*"
+  }
+}

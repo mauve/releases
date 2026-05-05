@@ -1,0 +1,36 @@
+{
+  "name": "@mauve/azpipe-convert",
+  "version": "0.1.0",
+  "description": "Convert existing azure-pipelines.yml and classic release JSON into TypeScript that uses @mauve/azpipe builders.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@mauve/azpipe": "workspace:*",
+    "@mauve/azpipe-core": "workspace:*",
+    "@mauve/azpipe-releases": "workspace:*",
+    "@mauve/azpipe-tasks": "workspace:*",
+    "@mauve/azpipe-utils": "workspace:*",
+    "prettier": "^3.4.2",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

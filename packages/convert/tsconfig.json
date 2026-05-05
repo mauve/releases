@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "test"],
+  "references": [
+    { "path": "../core" },
+    { "path": "../azpipe" },
+    { "path": "../releases" },
+    { "path": "../tasks" },
+    { "path": "../utils" }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@mauve/azpipe-utils",
+  "version": "0.1.0",
+  "description": "Composition helpers for building derived Azure Pipelines packages on top of @mauve/azpipe.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./diff": {
+      "types": "./dist/diff/index.d.ts",
+      "default": "./dist/diff/index.js"
+    },
+    "./predef": {
+      "types": "./dist/predef/index.d.ts",
+      "default": "./dist/predef/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "sync-vars": "tsx scripts/sync-vars.ts"
+  },
+  "dependencies": {
+    "@mauve/azpipe": "workspace:*",
+    "@mauve/azpipe-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

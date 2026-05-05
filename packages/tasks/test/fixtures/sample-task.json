@@ -1,0 +1,54 @@
+{
+  "id": "00000000-0000-0000-0000-000000000001",
+  "name": "SampleTask",
+  "friendlyName": "Sample Task (test fixture)",
+  "description": "Hand-crafted task fixture used by the generator test suite.",
+  "helpUrl": "https://example.com/sample-task",
+  "helpMarkDown": "Help with `*/` characters and multiple lines.\n\nSecond paragraph.",
+  "category": "Build",
+  "version": { "Major": 2, "Minor": 0, "Patch": 0 },
+  "inputs": [
+    {
+      "name": "subscription",
+      "type": "connectedService:AzureRM",
+      "label": "Azure subscription",
+      "required": true,
+      "helpMarkDown": "Pick the subscription."
+    },
+    {
+      "name": "scriptType",
+      "type": "pickList",
+      "label": "Script Type",
+      "required": true,
+      "defaultValue": "bash",
+      "options": {
+        "ps": "PowerShell",
+        "bash": "Shell script",
+        "pscore": "PowerShell Core"
+      },
+      "helpMarkDown": "Type of script to run."
+    },
+    {
+      "name": "inlineScript",
+      "type": "multiLine",
+      "label": "Inline Script",
+      "required": true,
+      "visibleRule": "scriptLocation = inlineScript",
+      "helpMarkDown": "The script body."
+    },
+    {
+      "name": "timeoutSeconds",
+      "type": "int",
+      "label": "Timeout",
+      "defaultValue": 30,
+      "groupName": "advanced",
+      "helpMarkDown": "Seconds before timeout."
+    },
+    {
+      "name": "ignoreErrors",
+      "type": "boolean",
+      "label": "Ignore errors",
+      "defaultValue": "false"
+    }
+  ]
+}

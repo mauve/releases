@@ -1,0 +1,59 @@
+{
+  "id": 42,
+  "name": "web-release",
+  "path": "\\",
+  "revision": 7,
+  "url": "https://vsrm.dev.azure.com/mauve/platform/_apis/release/definitions/42",
+  "releaseNameFormat": "Release-$(rev:r)",
+  "createdOn": "2025-01-01T00:00:00Z",
+  "modifiedOn": "2025-04-01T00:00:00Z",
+  "createdBy": { "displayName": "alice" },
+  "modifiedBy": { "displayName": "alice" },
+  "_links": {},
+  "variables": {},
+  "variableGroups": [],
+  "artifacts": [
+    {
+      "alias": "web",
+      "type": "Build",
+      "isPrimary": true,
+      "isRetained": false,
+      "definitionReference": {
+        "definition": { "id": "100", "name": "100" },
+        "defaultVersionType": { "id": "latestType", "name": "latestType" }
+      }
+    }
+  ],
+  "triggers": [{ "triggerType": "artifactSource", "artifactAlias": "web" }],
+  "environments": [
+    {
+      "id": 1,
+      "name": "staging",
+      "rank": 1,
+      "preDeployApprovals": {
+        "approvals": [{ "rank": 1, "isAutomated": true, "isNotificationOn": false }]
+      },
+      "postDeployApprovals": {
+        "approvals": [{ "rank": 1, "isAutomated": true, "isNotificationOn": false }]
+      },
+      "deployPhases": [
+        {
+          "rank": 1,
+          "phaseType": "agentBasedDeployment",
+          "name": "Agent job",
+          "workflowTasks": [
+            {
+              "taskId": "5515f72c-5faa-4121-8a46-8f42a8f42132",
+              "version": "1.*",
+              "definitionType": "task",
+              "enabled": true,
+              "name": "Install Node",
+              "inputs": { "version": "20.x" }
+            }
+          ]
+        }
+      ],
+      "retentionPolicy": { "daysToKeep": 30, "releasesToKeep": 3, "retainBuild": true }
+    }
+  ]
+}
