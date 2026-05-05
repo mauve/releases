@@ -1,8 +1,11 @@
-# Tag-triggered: build, verify, create GitHub release.
+# Tag-triggered: build, verify, create GitHub release, publish to npm.
 #
 # Workflow:
 #   1. Local: ./scripts/release.sh 0.1.0   →   bumps versions, edits CHANGELOG, tags `v0.1.0`.
 #   2. Local: git push && git push --tags  →   this workflow runs on the v* tag.
+#
+# Requirements:
+#   - GitHub secret NPM_TOKEN: npm automation token with publish access
 
 name: Release
 
@@ -81,3 +84,13 @@ jobs:
               --title "$GITHUB_REF_NAME" \
               --notes-file release-notes.md
           fi
+
+       - name: Configure npm authentication
+         env:
+           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+         run: |
+           echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
+           chmod 0600 ~/.npmrc
+
+       - name: Publish packages to npm
+         run: pnpm --filter "@mauve/*" publish --access public
