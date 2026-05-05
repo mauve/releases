@@ -1,5 +1,5 @@
 {
-  "name": "@mauve/azpipe-releases-client",
+  "name": "@mauvezero/azpipe-releases-client",
   "version": "0.2.0",
   "description": "REST client for Azure DevOps Classic Releases — get, list, diff, push.",
   "type": "module",
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@azure/identity": "^4.5.0",
-    "@mauve/azpipe-releases": "workspace:*",
-    "@mauve/azpipe-utils": "workspace:*"
+    "@mauvezero/azpipe-releases": "workspace:*",
+    "@mauvezero/azpipe-utils": "workspace:*"
   },
   "devDependencies": {
     "msw": "^2.7.0",

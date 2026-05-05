@@ -28,7 +28,7 @@ steps:
         });
         // Should import the typed factory
         expect(result.source).toContain("azureCLIV2");
-        expect(result.source).toContain("from '@mauve/azpipe-tasks'");
+        expect(result.source).toContain("from '@mauvezero/azpipe-tasks'");
         // Should import the connection TYPE (parameter is branded)
         expect(result.source).toContain("AzureRMConnection");
         // Parameter should be typed as connection type
@@ -58,7 +58,7 @@ steps:
             kind: 'steps',
         });
         expect(result.source).toContain("bash");
-        expect(result.source).toContain("from '@mauve/azpipe'");
+        expect(result.source).toContain("from '@mauvezero/azpipe'");
         expect(result.source).toContain("bash(");
         expect(result.source).not.toContain("bash: ");
     });
@@ -81,7 +81,7 @@ steps:
             kind: 'steps',
         });
         expect(result.source).toContain("task");
-        expect(result.source).toContain("from '@mauve/azpipe'");
+        expect(result.source).toContain("from '@mauvezero/azpipe'");
         expect(result.source).toContain("task('SomeUnknownTask@99'");
     });
 

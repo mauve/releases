@@ -6,8 +6,8 @@
  */
 
 import { parse as parseYaml } from 'yaml';
-import { validatePipeline, formatValidationErrors } from '@mauve/azpipe-core';
-import type { PipelineRoot } from '@mauve/azpipe';
+import { validatePipeline, formatValidationErrors } from '@mauvezero/azpipe-core';
+import type { PipelineRoot } from '@mauvezero/azpipe';
 
 export interface ParseOptions {
   /** When true, throw on schema-validation failures. Default: false (warnings

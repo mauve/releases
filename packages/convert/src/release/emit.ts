@@ -18,7 +18,7 @@ import type {
   ReleaseEnvironmentDefinition,
   ReleaseTrigger,
   WorkflowTask,
-} from '@mauve/azpipe-releases';
+} from '@mauvezero/azpipe-releases';
 import {
   expr,
   isRaw,

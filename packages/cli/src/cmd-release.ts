@@ -2,13 +2,13 @@ import { writeFileSync } from 'node:fs';
 import {
   ReleasePipelineBuilder,
   type ReleaseDefinition,
-} from '@mauve/azpipe-releases';
+} from '@mauvezero/azpipe-releases';
 import {
   ReleaseClient,
   diffAgainstServer,
   push as pushDefinition,
-} from '@mauve/azpipe-releases-client';
-import { unified } from '@mauve/azpipe-utils/diff';
+} from '@mauvezero/azpipe-releases-client';
+import { unified } from '@mauvezero/azpipe-utils/diff';
 import { loadEntry } from './loader.js';
 import { runReleaseImport } from './cmd-release-import.js';
 

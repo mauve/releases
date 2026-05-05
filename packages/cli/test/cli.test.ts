@@ -26,7 +26,7 @@ describe('azpipe CLI', () => {
     const out = join(dir, 'azure-pipelines.yml');
     writeFileSync(
       entry,
-      `import { pipeline, script } from '@mauve/azpipe';\n` +
+      `import { pipeline, script } from '@mauvezero/azpipe';\n` +
         `export default pipeline()\n` +
         `  .pool({ vmImage: 'ubuntu-latest' })\n` +
         `  .job('a', j => j.step(script('echo hi')));\n`,

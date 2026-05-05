@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 import { releaseJsonToTs } from '../src/index.js';
 
 const baseEnv = {
@@ -134,7 +134,7 @@ describe('releaseJsonToTs', () => {
     const result = await releaseJsonToTs(def, { org: 'o', project: 'p' });
     const src = result.files[0]!.contents;
     expect(src).toContain('useNodeV1');
-    expect(src).toContain("from '@mauve/azpipe-tasks'");
+    expect(src).toContain("from '@mauvezero/azpipe-tasks'");
     expect(src).toContain("displayName: 'Install Node'");
   });
 

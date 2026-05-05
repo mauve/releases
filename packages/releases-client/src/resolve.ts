@@ -3,7 +3,7 @@ import {
   readUnresolvedQueue,
   type AgentDeploymentInput,
   type ReleaseDefinition,
-} from '@mauve/azpipe-releases';
+} from '@mauvezero/azpipe-releases';
 import type { AgentQueue, ReleaseClient } from './client.js';
 
 /** Thrown when a queue name in the local definition doesn't match any queue in the project. */

@@ -27,7 +27,7 @@ import type {
   StepTemplateRef,
   TaskStep,
   Variable,
-} from '@mauve/azpipe';
+} from '@mauvezero/azpipe';
 import { posix as posixPath } from 'node:path';
 import {
   expr,

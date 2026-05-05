@@ -13,8 +13,8 @@
  * generated module's actual exports.
  */
 
-import * as taskMod from '@mauve/azpipe-tasks';
-import { taskIds, type TaskIdEntry } from '@mauve/azpipe-tasks';
+import * as taskMod from '@mauvezero/azpipe-tasks';
+import { taskIds, type TaskIdEntry } from '@mauvezero/azpipe-tasks';
 
 /** Forward and reverse lookups for a task. */
 export interface TaskMatch {

@@ -1,7 +1,7 @@
 {
-  "name": "@mauve/azpipe-utils",
+  "name": "@mauvezero/azpipe-utils",
   "version": "0.2.0",
-  "description": "Composition helpers for building derived Azure Pipelines packages on top of @mauve/azpipe.",
+  "description": "Composition helpers for building derived Azure Pipelines packages on top of @mauvezero/azpipe.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,8 +30,8 @@
     "sync-vars": "tsx scripts/sync-vars.ts"
   },
   "dependencies": {
-    "@mauve/azpipe": "workspace:*",
-    "@mauve/azpipe-core": "workspace:*"
+    "@mauvezero/azpipe": "workspace:*",
+    "@mauvezero/azpipe-core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

@@ -1,10 +1,10 @@
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 import {
   diff,
   releaseDescriptor,
   SERVER_MANAGED_PATHS,
   type DiffNode,
-} from '@mauve/azpipe-utils/diff';
+} from '@mauvezero/azpipe-utils/diff';
 import type { ReleaseClient } from './client.js';
 import { resolveQueueRefs } from './resolve.js';
 

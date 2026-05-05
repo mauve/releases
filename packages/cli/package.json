@@ -1,5 +1,5 @@
 {
-  "name": "@mauve/azpipe-cli",
+  "name": "@mauvezero/azpipe-cli",
   "version": "0.2.0",
   "description": "CLI for compiling TS-authored Azure Pipelines into YAML/JSON.",
   "type": "module",
@@ -17,13 +17,13 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@mauve/azpipe": "workspace:*",
-    "@mauve/azpipe-convert": "workspace:*",
-    "@mauve/azpipe-core": "workspace:*",
-    "@mauve/azpipe-tasks": "workspace:*",
-    "@mauve/azpipe-utils": "workspace:*",
-    "@mauve/azpipe-releases": "workspace:*",
-    "@mauve/azpipe-releases-client": "workspace:*",
+    "@mauvezero/azpipe": "workspace:*",
+    "@mauvezero/azpipe-convert": "workspace:*",
+    "@mauvezero/azpipe-core": "workspace:*",
+    "@mauvezero/azpipe-tasks": "workspace:*",
+    "@mauvezero/azpipe-utils": "workspace:*",
+    "@mauvezero/azpipe-releases": "workspace:*",
+    "@mauvezero/azpipe-releases-client": "workspace:*",
     "tsx": "^4.19.2",
     "yaml": "^2.7.0"
   },

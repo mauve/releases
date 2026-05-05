@@ -56,4 +56,4 @@ export {
   toJson,
   type SerializeOptions,
   type ValidationResult,
-} from '@mauve/azpipe-core';
+} from '@mauvezero/azpipe-core';

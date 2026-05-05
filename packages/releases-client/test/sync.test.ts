@@ -5,7 +5,7 @@ import { Writable } from 'node:stream';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 import { ReleaseClient, push } from '../src/index.js';
 
 const here = dirname(fileURLToPath(import.meta.url));

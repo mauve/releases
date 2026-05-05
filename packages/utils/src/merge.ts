@@ -1,4 +1,4 @@
-import type { AnyStage, BranchFilter, CITrigger, CITriggerInput, Variable } from '@mauve/azpipe';
+import type { AnyStage, BranchFilter, CITrigger, CITriggerInput, Variable } from '@mauvezero/azpipe';
 
 function uniq(xs: string[]): string[] {
   return [...new Set(xs)];

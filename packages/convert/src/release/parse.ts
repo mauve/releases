@@ -7,7 +7,7 @@
  * module just normalizes shape for the emitter.
  */
 
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 
 const SERVER_MANAGED_TOP: ReadonlyArray<keyof ReleaseDefinition> = [
   'id',

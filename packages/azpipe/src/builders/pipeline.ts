@@ -2,7 +2,7 @@ import {
   toYaml as coreToYaml,
   toJson as coreToJson,
   type SerializeOptions,
-} from '@mauve/azpipe-core';
+} from '@mauvezero/azpipe-core';
 import type {
   AnyJob,
   AnyStage,
@@ -50,7 +50,7 @@ import type { JobInit, DeploymentJobInit } from '../types.js';
  *
  * @example
  * ```ts
- * import { pipeline, script } from '@mauve/azpipe';
+ * import { pipeline, script } from '@mauvezero/azpipe';
  *
  * export default pipeline()
  *   .name('CI $(Date:yyyyMMdd)')
@@ -368,7 +368,7 @@ export class PipelineBuilder {
  *
  * @example
  * ```ts
- * import { pipeline, script } from '@mauve/azpipe';
+ * import { pipeline, script } from '@mauvezero/azpipe';
  *
  * export default pipeline()
  *   .pool({ vmImage: 'ubuntu-latest' })

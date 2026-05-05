@@ -57,7 +57,7 @@ export {
 export {
   releaseArtifactVar,
   type ReleaseArtifactVars,
-} from '@mauve/azpipe-utils';
+} from '@mauvezero/azpipe-utils';
 export {
   artifactSourceTrigger,
   scheduleTrigger,

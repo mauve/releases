@@ -1,5 +1,5 @@
 {
-  "name": "@mauve/azpipe-releases",
+  "name": "@mauvezero/azpipe-releases",
   "version": "0.2.0",
   "description": "Typesafe builders for Azure DevOps Classic Release definitions.",
   "type": "module",
@@ -21,9 +21,9 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@mauve/azpipe": "workspace:*",
-    "@mauve/azpipe-tasks": "workspace:*",
-    "@mauve/azpipe-utils": "workspace:*"
+    "@mauvezero/azpipe": "workspace:*",
+    "@mauvezero/azpipe-tasks": "workspace:*",
+    "@mauvezero/azpipe-utils": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

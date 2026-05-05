@@ -1,7 +1,7 @@
 import type {
   ReleaseDefinition,
   ReleaseDefinitionShallow,
-} from '@mauve/azpipe-releases';
+} from '@mauvezero/azpipe-releases';
 import { getToken, type AuthOptions } from './auth.js';
 import {
   AzureDevOpsApiError,

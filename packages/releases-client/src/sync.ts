@@ -1,6 +1,6 @@
 import { createInterface } from 'node:readline';
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
-import { unified } from '@mauve/azpipe-utils/diff';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
+import { unified } from '@mauvezero/azpipe-utils/diff';
 import type { ReleaseClient } from './client.js';
 import { diffAgainstServer } from './diff.js';
 

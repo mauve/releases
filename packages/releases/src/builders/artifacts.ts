@@ -1,4 +1,4 @@
-import { releaseArtifactVar, type ReleaseArtifactVars } from '@mauve/azpipe-utils';
+import { releaseArtifactVar, type ReleaseArtifactVars } from '@mauvezero/azpipe-utils';
 import type { Artifact, ArtifactSourceReference } from '../raw.js';
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pipeline, validatePipeline } from '@mauve/azpipe';
+import { pipeline, validatePipeline } from '@mauvezero/azpipe';
 import { useNodeV1, azureCLIV2, azureRMConnection } from '../src/index.js';
 
 describe('generated tasks integrate with @mauve/azpipe', () => {

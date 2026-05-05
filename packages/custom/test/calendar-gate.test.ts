@@ -7,7 +7,7 @@ import {
   CALENDAR_GATE_VERSION,
   type CalendarGateConnection,
 } from '../src/index.js';
-import type { GateStep, WorkflowTask } from '@mauve/azpipe-releases';
+import type { GateStep, WorkflowTask } from '@mauvezero/azpipe-releases';
 
 describe('calendarGateConnection', () => {
   it('returns a branded value usable where CalendarGateConnection is expected', () => {

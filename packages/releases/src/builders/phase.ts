@@ -1,4 +1,4 @@
-import type { TaskStep } from '@mauve/azpipe';
+import type { TaskStep } from '@mauvezero/azpipe';
 import type {
   AgentDeploymentInput,
   DeployPhase,

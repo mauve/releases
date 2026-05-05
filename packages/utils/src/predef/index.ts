@@ -19,7 +19,7 @@
  *
  * @example
  * ```ts
- * import { PreDef, releaseArtifactVar } from '@mauve/azpipe-utils';
+ * import { PreDef, releaseArtifactVar } from '@mauvezero/azpipe-utils';
  *
  * PreDef.Pipeline.Build.SourceBranch    // '$(Build.SourceBranch)'
  * PreDef.Release.Release.ReleaseId      // '$(Release.ReleaseId)'

@@ -6,7 +6,7 @@ import {
   readUnresolvedQueue,
   type AgentDeploymentInput,
   type ReleaseDefinition,
-} from '@mauve/azpipe-releases';
+} from '@mauvezero/azpipe-releases';
 import {
   ReleaseClient,
   resolveQueueRefs,

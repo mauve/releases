@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
-import { yamlToTs } from '@mauve/azpipe-convert';
+import { yamlToTs } from '@mauvezero/azpipe-convert';
 
 interface ImportOpts {
   input: string;

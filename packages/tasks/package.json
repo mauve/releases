@@ -1,5 +1,5 @@
 {
-  "name": "@mauve/azpipe-tasks",
+  "name": "@mauvezero/azpipe-tasks",
   "version": "0.2.0",
   "description": "Typed function helpers for every (non-deprecated) task in microsoft/azure-pipelines-tasks.",
   "type": "module",
@@ -22,7 +22,7 @@
     "sync-tasks": "tsx scripts/sync-tasks.ts"
   },
   "dependencies": {
-    "@mauve/azpipe": "workspace:*"
+    "@mauvezero/azpipe": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

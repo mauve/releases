@@ -17,7 +17,7 @@
  * @packageDocumentation
  */
 
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 import { posix as path } from 'node:path';
 import { parsePipelineYaml, type ParseOptions } from './yaml/parse.js';
 import { emitPipelineSource, type ReferencedTemplate } from './yaml/emit.js';

@@ -1,14 +1,14 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { stringify as yamlStringify } from 'yaml';
-import { toYaml, toJson, validatePipeline, formatValidationErrors } from '@mauve/azpipe-core';
-import { PipelineBuilder } from '@mauve/azpipe';
+import { toYaml, toJson, validatePipeline, formatValidationErrors } from '@mauvezero/azpipe-core';
+import { PipelineBuilder } from '@mauvezero/azpipe';
 import {
   renderTemplateFile,
   type TemplateDefinition,
   type ParamShape,
   type TemplateKind,
-} from '@mauve/azpipe-utils';
+} from '@mauvezero/azpipe-utils';
 import { loadEntry } from './loader.js';
 
 interface BuildOpts {

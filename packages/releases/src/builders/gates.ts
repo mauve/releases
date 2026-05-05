@@ -1,4 +1,4 @@
-import type { TaskStep } from '@mauve/azpipe';
+import type { TaskStep } from '@mauvezero/azpipe';
 import type { GatesBlock, GatesOptions, GateStep, WorkflowTask } from '../raw.js';
 import { taskStepToWorkflowTask } from '../workflow-task.js';
 

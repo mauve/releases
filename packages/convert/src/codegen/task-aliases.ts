@@ -10,8 +10,8 @@
  * - `getConnectionKind(taskRef, canonicalName)` — returns connection kind if input is a service connection.
  */
 
-import { azurePipelinesSchema } from '@mauve/azpipe-core';
-import { taskConnectionInputs } from '@mauve/azpipe-tasks';
+import { azurePipelinesSchema } from '@mauvezero/azpipe-core';
+import { taskConnectionInputs } from '@mauvezero/azpipe-tasks';
 
 /** Map: taskRef → { yamlName → canonicalName } */
 type AliasMap = Map<string, Map<string, string>>;

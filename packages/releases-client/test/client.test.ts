@@ -10,7 +10,7 @@ import {
   RateLimitedError,
   AzureDevOpsApiError,
 } from '../src/index.js';
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(

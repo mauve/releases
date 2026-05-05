@@ -1,5 +1,5 @@
 {
-  "name": "@mauve/custom",
+  "name": "@mauvezero/custom",
   "version": "0.2.0",
   "description": "Mauve-only custom helpers (gates, tasks, presets) for the azpipe suite.",
   "type": "module",
@@ -21,7 +21,7 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@mauve/azpipe-releases": "workspace:*"
+    "@mauvezero/azpipe-releases": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

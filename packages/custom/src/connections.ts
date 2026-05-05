@@ -26,7 +26,7 @@ export type CalendarGateConnection = string & { readonly [__brand_CalendarGate]:
  *
  * @example
  * ```ts
- * import { calendarGate, calendarGateConnection } from '@mauve/custom';
+ * import { calendarGate, calendarGateConnection } from '@mauvezero/custom';
  *
  * env.preGates(gates({ gates: [
  *   calendarGate({ connection: calendarGateConnection('prod-calendars') }),

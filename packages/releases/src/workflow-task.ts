@@ -1,5 +1,5 @@
-import type { TaskStep } from '@mauve/azpipe';
-import { lookupTaskId } from '@mauve/azpipe-tasks';
+import type { TaskStep } from '@mauvezero/azpipe';
+import { lookupTaskId } from '@mauvezero/azpipe-tasks';
 import type { WorkflowTask } from './raw.js';
 
 export class UnknownTaskRefError extends Error {
@@ -31,7 +31,7 @@ export interface WorkflowTaskOverrides {
  *
  * @example
  * ```ts
- * import { useNodeV1 } from '@mauve/azpipe-tasks';
+ * import { useNodeV1 } from '@mauvezero/azpipe-tasks';
  * const wt = taskStepToWorkflowTask(useNodeV1({ version: '20.x' }));
  * // → { taskId: '...', version: '1.*', enabled: true, inputs: { version: '20.x' }, ... }
  * ```

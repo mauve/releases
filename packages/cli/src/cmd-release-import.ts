@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
-import { releaseJsonToTs } from '@mauve/azpipe-convert';
-import { ReleaseClient } from '@mauve/azpipe-releases-client';
-import type { ReleaseDefinition } from '@mauve/azpipe-releases';
+import { releaseJsonToTs } from '@mauvezero/azpipe-convert';
+import { ReleaseClient } from '@mauvezero/azpipe-releases-client';
+import type { ReleaseDefinition } from '@mauvezero/azpipe-releases';
 
 interface ImportOpts {
   inputFile: string;

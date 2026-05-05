@@ -14,7 +14,7 @@
  * string literal — no false positives.
  */
 
-import { PreDef } from '@mauve/azpipe-utils';
+import { PreDef } from '@mauvezero/azpipe-utils';
 import { isRaw, raw, type RawExpr, strLit } from './printer.js';
 
 interface PredefEntry {

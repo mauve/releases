@@ -25,7 +25,7 @@ jobs:
     expect(result.files).toHaveLength(1);
     expect(result.files[0]!.path).toBe('pipeline.ts');
     const src = result.files[0]!.contents;
-    expect(src).toContain("from '@mauve/azpipe'");
+    expect(src).toContain("from '@mauvezero/azpipe'");
     expect(src).toContain('pipeline()');
     expect(src).toContain(".name('CI')");
     expect(src).toContain('checkout(');
@@ -45,7 +45,7 @@ jobs:
     const src = result.files[0]!.contents;
     expect(src).toContain('PreDef');
     expect(src).toContain('PreDef.Pipeline.Build.SourceBranch');
-    expect(src).toContain("from '@mauve/azpipe-utils'");
+    expect(src).toContain("from '@mauvezero/azpipe-utils'");
   });
 
   it('emits typed task factories when the task is in the catalog', async () => {
@@ -61,7 +61,7 @@ jobs:
 `;
     const result = await yamlToTs(yaml);
     const src = result.files[0]!.contents;
-    expect(src).toContain("from '@mauve/azpipe-tasks'");
+    expect(src).toContain("from '@mauvezero/azpipe-tasks'");
     expect(src).toContain('useNodeV1');
     expect(src).not.toContain("task('UseNode@1'");
   });

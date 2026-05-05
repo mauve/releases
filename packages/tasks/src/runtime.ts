@@ -1,4 +1,4 @@
-import type { TaskStep } from '@mauve/azpipe';
+import type { TaskStep } from '@mauvezero/azpipe';
 
 /** Step-level options shared by every task. Anything except the discriminator
  *  (`task`) and `inputs`. */

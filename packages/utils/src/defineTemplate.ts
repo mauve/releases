@@ -1,4 +1,4 @@
-import type { AnyJob, AnyStage, Step, Variable } from '@mauve/azpipe';
+import type { AnyJob, AnyStage, Step, Variable } from '@mauvezero/azpipe';
 
 /** Spec for a single template parameter. The TS type of `default` is the
  *  inferred parameter type when consumers call `extend(...)`. */

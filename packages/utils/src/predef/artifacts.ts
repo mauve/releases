@@ -76,7 +76,7 @@ const ARTIFACT_FIELDS = [
  *
  * @example
  * ```ts
- * import { releaseArtifactVar } from '@mauve/azpipe-utils';
+ * import { releaseArtifactVar } from '@mauvezero/azpipe-utils';
  *
  * const v = releaseArtifactVar('web');
  * v.BuildId        // '$(Release.Artifacts.web.BuildId)'

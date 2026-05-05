@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauve/azpipe-tasks';
+import { useNodeV1, azureCLIV2, azureRMConnection } from '@mauvezero/azpipe-tasks';
 import {
   releasePipeline,
   approval,

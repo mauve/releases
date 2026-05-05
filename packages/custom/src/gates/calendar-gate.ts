@@ -1,4 +1,4 @@
-import type { GateStep, WorkflowTask } from '@mauve/azpipe-releases';
+import type { GateStep, WorkflowTask } from '@mauvezero/azpipe-releases';
 import type { CalendarGateConnection } from '../connections.js';
 
 /** GUID of the `CalendarGateCheck` task contributed by the CalendarGate extension. */
@@ -61,8 +61,8 @@ export interface CalendarGateTaskOptions {
  *
  * @example
  * ```ts
- * import { gates } from '@mauve/azpipe-releases';
- * import { calendarGateCheck, calendarGateConnection } from '@mauve/custom';
+ * import { gates } from '@mauvezero/azpipe-releases';
+ * import { calendarGateCheck, calendarGateConnection } from '@mauvezero/custom';
  *
  * env.preGates(gates({
  *   gates: [{
@@ -115,8 +115,8 @@ export interface CalendarGateOptions extends CalendarGateTaskOptions {
  *
  * @example
  * ```ts
- * import { releasePipeline, gates } from '@mauve/azpipe-releases';
- * import { calendarGate, calendarGateConnection } from '@mauve/custom';
+ * import { releasePipeline, gates } from '@mauvezero/azpipe-releases';
+ * import { calendarGate, calendarGateConnection } from '@mauvezero/custom';
  *
  * export default releasePipeline({ org: 'neko', project: 'platform', name: 'web-release' })
  *   .environment('prod', e => e
