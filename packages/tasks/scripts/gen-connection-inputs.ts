@@ -18,29 +18,29 @@ let m: RegExpExecArray | null;
 while ((m = taskIdRe.exec(taskIdsContent)) !== null) taskRefs.push(m[1]!);
 
 function toKebab(name: string): string {
-  return name
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase();
+    return name
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+        .toLowerCase();
 }
 
 const result: Record<string, Record<string, string>> = {};
 
 for (const taskRef of taskRefs) {
-  const atIdx = taskRef.lastIndexOf('@');
-  const taskName = taskRef.slice(0, atIdx);
-  const major = taskRef.slice(atIdx + 1);
-  const folder = toKebab(taskName);
-  const filePath = join(genDir, folder, `v${major}.ts`);
-  if (!existsSync(filePath)) continue;
-  const content = readFileSync(filePath, 'utf8');
-  const re = /"(\w+)"\??: (\w+Connection);/g;
-  let match: RegExpExecArray | null;
-  const connections: Record<string, string> = {};
-  while ((match = re.exec(content)) !== null) {
-    connections[match[1]!] = match[2]!.replace(/Connection$/, '');
-  }
-  if (Object.keys(connections).length > 0) result[taskRef] = connections;
+    const atIdx = taskRef.lastIndexOf('@');
+    const taskName = taskRef.slice(0, atIdx);
+    const major = taskRef.slice(atIdx + 1);
+    const folder = toKebab(taskName);
+    const filePath = join(genDir, folder, `v${major}.ts`);
+    if (!existsSync(filePath)) continue;
+    const content = readFileSync(filePath, 'utf8');
+    const re = /"(\w+)"\??: (\w+Connection);/g;
+    let match: RegExpExecArray | null;
+    const connections: Record<string, string> = {};
+    while ((match = re.exec(content)) !== null) {
+        connections[match[1]!] = match[2]!.replace(/Connection$/, '');
+    }
+    if (Object.keys(connections).length > 0) result[taskRef] = connections;
 }
 
 const output = `/* eslint-disable */

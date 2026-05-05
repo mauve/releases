@@ -756,7 +756,7 @@ function convertConditionValue(value: string): string {
   if (value === 'false') return 'false';
   // Quoted strings.
   if ((value.startsWith("'") && value.endsWith("'")) ||
-      (value.startsWith('"') && value.endsWith('"'))) {
+    (value.startsWith('"') && value.endsWith('"'))) {
     return strLit(value.slice(1, -1));
   }
   // Numeric values.
