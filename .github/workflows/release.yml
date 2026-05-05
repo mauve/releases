@@ -88,5 +88,13 @@ jobs:
               --notes-file /tmp/release-notes.md
           fi
 
+      - name: Get OIDC token for npm Trusted Publishing
+        run: |
+          TOKEN=$(curl -s \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm" \
+            | jq -r '.value')
+          echo "NODE_AUTH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
       - name: Publish packages to npm
         run: pnpm --filter "@mauvezero/*" publish --access public --provenance --no-git-checks
