@@ -8,6 +8,7 @@ interface ImportOpts {
   templatesDir: string;
   emitTemplates: boolean;
   prettier: boolean;
+  inlineTemplates: boolean;
   help: boolean;
 }
 
@@ -18,6 +19,7 @@ function parseArgs(argv: string[]): ImportOpts {
     templatesDir: '',
     emitTemplates: true,
     prettier: true,
+    inlineTemplates: true,
     help: false,
   };
   const positional: string[] = [];
@@ -28,6 +30,7 @@ function parseArgs(argv: string[]): ImportOpts {
     else if (a === '--templates-dir') opts.templatesDir = argv[++i] ?? '';
     else if (a === '--no-templates') opts.emitTemplates = false;
     else if (a === '--no-prettier') opts.prettier = false;
+    else if (a === '--no-inline-templates') opts.inlineTemplates = false;
     else if (a.startsWith('-')) throw new Error(`Unknown flag: ${a}`);
     else positional.push(a);
   }
@@ -46,6 +49,7 @@ Options:
       --templates-dir <d>  Output directory for converted templates
                            (default: dirname(--out)/templates)
       --no-templates       Don't recursively convert template:/extends: files
+      --no-inline-templates Emit defineTemplate/extend instead of plain functions
       --no-prettier        Skip Prettier formatting
   -h, --help               Show this help`);
 }
@@ -82,6 +86,7 @@ export async function runBuildImport(argv: string[]): Promise<void> {
   const result = await yamlToTs(yamlText, {
     prettier: opts.prettier,
     emitTemplates: opts.emitTemplates,
+    inlineTemplates: opts.inlineTemplates,
     entryFileName: opts.out,
     outputDir: outputDirRel,
     loadTemplate: (templatePath) => {

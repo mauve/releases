@@ -71,11 +71,15 @@ interface Ctx {
   scope: IdentifierScope;
   templates: Map<string, ReferencedTemplate>;
   outputDir: string;
+  inlineTemplates: boolean;
 }
 
 export interface EmitOptions {
   /** Relative path from input YAML dir to output entry dir. Default: `'.'`. */
   outputDir?: string;
+  /** When true (default), template call sites use function-call syntax instead
+   *  of `extend()`. The template files are emitted as plain functions. */
+  inlineTemplates?: boolean;
 }
 
 /** Convert a parsed pipeline to TS source. */
@@ -90,6 +94,7 @@ export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {
     scope: new IdentifierScope(),
     templates: new Map(),
     outputDir: opts.outputDir ?? '.',
+    inlineTemplates: opts.inlineTemplates ?? true,
   };
   ctx.imports.add(AZPIPE, 'pipeline');
   if (usedNamespaces.size > 0) ctx.imports.add(UTILS, 'PreDef');
@@ -137,7 +142,7 @@ export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {
     }
   } else if (root.steps && root.steps.length > 0) {
     for (const step of root.steps) {
-      calls.push(method('step', [renderStep(step, ctx)]));
+      calls.push(renderStepCall(renderStep(step, ctx)));
     }
   }
 
@@ -167,6 +172,10 @@ export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {
 function renderTopLevelStage(stage: AnyStage, ctx: Ctx): string[] {
   if ('template' in stage) {
     const id = registerTemplate(ctx, stage.template, 'stages');
+    if (ctx.inlineTemplates) {
+      const args = stage.parameters ? valueArg(stage.parameters) : '';
+      return [method('stages', [`${id}(${args})`])];
+    }
     if (stage.parameters) {
       ctx.imports.add(UTILS, 'extend');
       return [method('stageTemplateRef', [`extend(${id}, ${valueArg(stage.parameters)})`])];
@@ -180,6 +189,10 @@ function renderTopLevelStage(stage: AnyStage, ctx: Ctx): string[] {
 function renderTopLevelJob(job: AnyJob, ctx: Ctx): string[] {
   if ('template' in job) {
     const id = registerTemplate(ctx, job.template, 'jobs');
+    if (ctx.inlineTemplates) {
+      const args = job.parameters ? valueArg(job.parameters) : '';
+      return [method('jobs', [`${id}(${args})`])];
+    }
     if (job.parameters) {
       ctx.imports.add(UTILS, 'extend');
       return [method('jobTemplate', [`extend(${id}, ${valueArg(job.parameters)})`])];
@@ -210,7 +223,10 @@ function renderStageBody(stage: Exclude<AnyStage, { template: string }>, ctx: Ct
     for (const job of stage.jobs) {
       if ('template' in job) {
         const id = registerTemplate(ctx, job.template, 'jobs');
-        if (job.parameters) {
+        if (ctx.inlineTemplates) {
+          const args = job.parameters ? valueArg(job.parameters) : '';
+          calls.push(method('jobs', [`${id}(${args})`]));
+        } else if (job.parameters) {
           ctx.imports.add(UTILS, 'extend');
           calls.push(method('jobTemplate', [`extend(${id}, ${valueArg(job.parameters)})`]));
         } else {
@@ -245,7 +261,7 @@ function renderJobBody(job: JobObject, ctx: Ctx): string {
     for (const v of normalizeVariables(job.variables)) calls.push(...renderVariableMethod(v, ctx));
   }
   if (job.steps) {
-    for (const step of job.steps) calls.push(method('step', [renderStep(step, ctx)]));
+    for (const step of job.steps) calls.push(renderStepCall(renderStep(step, ctx)));
   }
   return arrowExpr('j', calls);
 }
@@ -356,12 +372,28 @@ function renderTaskStep(step: TaskStep, ctx: Ctx): string {
 
 function renderStepTemplate(step: StepTemplateRef, ctx: Ctx): string {
   const id = registerTemplate(ctx, step.template, 'steps');
+  if (ctx.inlineTemplates) {
+    // Signal to the caller via a prefix that this needs `.steps()` wrapping.
+    const args = step.parameters ? valueArg(step.parameters) : '';
+    return `\0SPREAD_STEPS\0${id}(${args})`;
+  }
   if (step.parameters) {
     ctx.imports.add(UTILS, 'extend');
     return `extend(${id}, ${valueArg(step.parameters)})`;
   }
   ctx.imports.add(AZPIPE, 'stepTemplate');
   return `stepTemplate(${valueArg(step.template)})`;
+}
+
+const SPREAD_STEPS_PREFIX = '\0SPREAD_STEPS\0';
+
+/** Wrap a rendered step expression in the appropriate method call.
+ *  Inline template steps use `.steps(fn())` instead of `.step(expr)`. */
+function renderStepCall(rendered: string): string {
+  if (rendered.startsWith(SPREAD_STEPS_PREFIX)) {
+    return method('steps', [rendered.slice(SPREAD_STEPS_PREFIX.length)]);
+  }
+  return method('step', [rendered]);
 }
 
 // ---- variables ----------------------------------------------------------

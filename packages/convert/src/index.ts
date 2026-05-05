@@ -21,7 +21,7 @@ import type { ReleaseDefinition } from '@mauve/azpipe-releases';
 import { posix as path } from 'node:path';
 import { parsePipelineYaml, type ParseOptions } from './yaml/parse.js';
 import { emitPipelineSource, type ReferencedTemplate } from './yaml/emit.js';
-import { emitTemplateSource } from './yaml/templates.js';
+import { emitTemplateSource, emitInlineTemplateSource } from './yaml/templates.js';
 import { stripServerFields } from './release/parse.js';
 import { emitReleaseSource, type ReleaseEmitOptions } from './release/emit.js';
 import { formatTs } from './codegen/prettier.js';
@@ -54,6 +54,12 @@ export interface YamlConvertOptions extends ParseOptions {
   /** Output filename for the entry pipeline. Default: `'pipeline.ts'`. */
   entryFileName?: string;
   /**
+   * When true (default), templates are converted to plain TS functions
+   * returning `Step[]`/`Job[]`/`Stage[]`. When false, uses the legacy
+   * `defineTemplate`/`extend` pattern.
+   */
+  inlineTemplates?: boolean;
+  /**
    * Relative path from the input YAML directory to the output entry directory.
    * Used to rebase template paths so imports are correct relative to the
    * output entry. Default: `'.'` (same directory).
@@ -83,7 +89,8 @@ export async function yamlToTs(
 ): Promise<ConvertResult> {
   const { pipeline, warnings } = parsePipelineYaml(yamlText, opts);
   const outputDir = opts.outputDir ?? '.';
-  const { source, referencedTemplates } = emitPipelineSource(pipeline, { outputDir });
+  const inlineTemplates = opts.inlineTemplates ?? true;
+  const { source, referencedTemplates } = emitPipelineSource(pipeline, { outputDir, inlineTemplates });
   const files: ConvertedFile[] = [];
   const entryName = opts.entryFileName ?? 'pipeline.ts';
   files.push({ path: entryName, contents: await maybeFormat(source, opts.prettier) });
@@ -93,12 +100,22 @@ export async function yamlToTs(
     for (const ref of referencedTemplates) {
       const yamlSrc = opts.loadTemplate(ref.templatePath);
       if (yamlSrc === undefined) continue;
-      const tFile = emitTemplateSource({
+      const input = {
         referencePath: ref.templatePath,
         identifier: ref.identifier,
         yamlText: yamlSrc,
         kind: ref.kind,
-      });
+      };
+      let tFile;
+      if (inlineTemplates) {
+        const result = emitInlineTemplateSource(input);
+        if (result.hasComplexExpressions) {
+          console.error(`warning: template ${ref.templatePath} has complex expressions that need manual conversion`);
+        }
+        tFile = result;
+      } else {
+        tFile = emitTemplateSource(input);
+      }
       // Rebase template file path from input-relative to output-relative.
       const rebasedPath = rebasePath(tFile.filePath, outputDir);
       files.push({

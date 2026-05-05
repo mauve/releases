@@ -159,6 +159,39 @@ jobs:
     expect(result.files).toHaveLength(2);
     const entry = result.files[0]!.contents;
     const tpl = result.files[1]!.contents;
+    // Default inline mode: template becomes a function call.
+    expect(entry).toContain('buildAndTest(');
+    expect(entry).toContain('.jobs(');
+    expect(tpl).toContain('export function buildAndTest');
+    expect(tpl).toContain('AnyJob[]');
+  });
+
+  it('emits defineTemplate/extend when inlineTemplates is false', async () => {
+    const main = `
+pool: { vmImage: ubuntu-latest }
+stages:
+  - stage: Test
+    jobs:
+      - template: templates/build-and-test.yml
+        parameters:
+          runLint: true
+`;
+    const tplYaml = `parameters:
+  - name: runLint
+    type: boolean
+    default: true
+jobs:
+  - job: build_and_test
+    steps:
+      - script: npm test
+`;
+    const result = await yamlToTs(main, {
+      inlineTemplates: false,
+      loadTemplate: (p) => (p === 'templates/build-and-test.yml' ? tplYaml : undefined),
+    });
+    expect(result.files).toHaveLength(2);
+    const entry = result.files[0]!.contents;
+    const tpl = result.files[1]!.contents;
     expect(entry).toContain('extend(buildAndTest');
     expect(tpl).toContain('defineTemplate');
     expect(tpl).toContain("kind: 'jobs'");

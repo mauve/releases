@@ -172,6 +172,12 @@ export class StageBuilder {
    * - `jobTemplate(extend(typedTemplate, { ... }))` — pre-built reference object,
    *   typically from {@link "extend"} in `@mauve/azpipe-utils`.
    */
+  /** Append several pre-built job objects. */
+  jobs(jobs: AnyJob[]): this {
+    this.rawJobs.push(...jobs);
+    return this;
+  }
+
   jobTemplate(template: string, parameters?: Record<string, unknown>): this;
   jobTemplate(ref: { template: string; parameters?: Record<string, unknown> }): this;
   jobTemplate(

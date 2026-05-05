@@ -272,6 +272,18 @@ export class PipelineBuilder {
     return this;
   }
 
+  /** Append several pre-built stage objects. Switches to **stages mode**. */
+  stages(stages: AnyStage[]): this {
+    this.stageRefs.push(...stages);
+    return this;
+  }
+
+  /** Append several pre-built job objects. Switches to **jobs mode**. */
+  jobs(jobs: AnyJob[]): this {
+    this.jobRefs.push(...jobs);
+    return this;
+  }
+
   /**
    * Append a step at the pipeline root. Switches the pipeline to **steps mode**
    * (single implicit job) unless stages or jobs have already been added.
