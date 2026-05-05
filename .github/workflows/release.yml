@@ -66,9 +66,9 @@ jobs:
         run: |
           set -e
           VERSION="${GITHUB_REF_NAME#v}"
-          node scripts/extract-changelog.mjs "$VERSION" > release-notes.md
+          node scripts/extract-changelog.mjs "$VERSION" > /tmp/release-notes.md
           echo "----- release notes -----"
-          cat release-notes.md
+          cat /tmp/release-notes.md
           echo "-------------------------"
 
       - name: Create or update GitHub release
@@ -80,11 +80,11 @@ jobs:
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release edit "$GITHUB_REF_NAME" \
               --title "$GITHUB_REF_NAME" \
-              --notes-file release-notes.md
+              --notes-file /tmp/release-notes.md
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "$GITHUB_REF_NAME" \
-              --notes-file release-notes.md
+              --notes-file /tmp/release-notes.md
           fi
 
       - name: Publish packages to npm
