@@ -10,6 +10,8 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-06
+
 ### Added
 
 - **`@mauvezero/azpipe-convert`**: `ghaToTs(yamlText, opts?)` — converts a GitHub Actions workflow YAML file to TypeScript using the `@mauvezero/ghactions` and `@mauvezero/ghactions-actions` fluent builders. Known actions (e.g. `actions/checkout@v6`) are emitted as typed factory calls; unknown refs fall back to `uses()`. Supports all common workflow and job fields: triggers, `env`, `concurrency`, `permissions`, `defaults`, `runs-on`, `needs`, `if_`, `strategy`, `container`, `services`, `outputs`, step `name`/`if`/`env`/`with`/`continue-on-error`/`working-directory`/`shell`. Emits a single `workflow.ts` file.
