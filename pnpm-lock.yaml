@@ -102,6 +102,9 @@ importers:
       '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
+      '@mauvezero/ghactions':
+        specifier: workspace:*
+        version: link:../ghactions
       tsx:
         specifier: ^4.19.2
         version: 4.21.0
@@ -133,6 +136,12 @@ importers:
       '@mauvezero/azpipe-utils':
         specifier: workspace:*
         version: link:../utils
+      '@mauvezero/ghactions':
+        specifier: workspace:*
+        version: link:../ghactions
+      '@mauvezero/ghactions-actions':
+        specifier: workspace:*
+        version: link:../ghactions-actions
       prettier:
         specifier: ^3.4.2
         version: 3.8.3
@@ -175,6 +184,41 @@ importers:
         specifier: workspace:*
         version: link:../releases
     devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.2.4(@types/node@22.19.17)(msw@2.14.0(@types/node@22.19.17)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+
+  packages/ghactions:
+    dependencies:
+      '@mauvezero/azpipe-core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.2.4(@types/node@22.19.17)(msw@2.14.0(@types/node@22.19.17)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+
+  packages/ghactions-actions:
+    dependencies:
+      '@mauvezero/ghactions':
+        specifier: workspace:*
+        version: link:../ghactions
+    devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.1
+      tsx:
+        specifier: ^4.19.3
+        version: 4.21.0
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
@@ -749,6 +793,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/js-yaml@4.0.9':
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2051,6 +2098,8 @@ snapshots:
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/js-yaml@4.0.9': {}
 
   '@types/json-schema@7.0.15': {}
 
