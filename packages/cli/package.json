@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@mauvezero/azpipe": "workspace:*",
+    "@mauvezero/ghactions": "workspace:*",
     "@mauvezero/azpipe-convert": "workspace:*",
     "@mauvezero/azpipe-core": "workspace:*",
     "@mauvezero/azpipe-tasks": "workspace:*",
