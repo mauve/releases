@@ -10,6 +10,12 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-06
+
+### Added
+
+- **`@mauvezero/azpipe-cli`**: `azpipe bootstrap` command — scaffolds a `pipelines/` directory in the current git repo with a `package.json` (build/diff/push scripts), `tsconfig.json`, `README.md`, a CI pipeline stub (`azure-pipelines.ts`, or converted from an existing root `azure-pipelines.yml`), a release pipeline stub (`release.ts`), and a `release-sync.yml` YAML pipeline that diffs on PRs and pushes on the default branch. Detects org, project, and default branch from environment variables and the git remote URL. Supports `--yes` for non-interactive / `npx` usage.
+
 ## [0.3.0] - 2026-05-06
 
 ### Added
