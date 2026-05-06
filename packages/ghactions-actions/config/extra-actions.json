@@ -1,0 +1,110 @@
+[
+  {
+    "owner": "docker",
+    "repo": "login-action",
+    "ref": "v3",
+    "note": "Authenticate to container registries"
+  },
+  {
+    "owner": "docker",
+    "repo": "build-push-action",
+    "ref": "v6",
+    "note": "Build and push Docker images"
+  },
+  {
+    "owner": "docker",
+    "repo": "setup-buildx-action",
+    "ref": "v3",
+    "note": "Set up Docker Buildx"
+  },
+  {
+    "owner": "docker",
+    "repo": "setup-qemu-action",
+    "ref": "v3",
+    "note": "Set up QEMU for multi-platform builds"
+  },
+  {
+    "owner": "docker",
+    "repo": "metadata-action",
+    "ref": "v5",
+    "note": "Extract metadata (tags, labels) for Docker images"
+  },
+  {
+    "owner": "aws-actions",
+    "repo": "configure-aws-credentials",
+    "ref": "v4",
+    "note": "Configure AWS credential environment variables"
+  },
+  {
+    "owner": "aws-actions",
+    "repo": "amazon-ecr-login",
+    "ref": "v2",
+    "note": "Log in to Amazon ECR"
+  },
+  {
+    "owner": "azure",
+    "repo": "login",
+    "ref": "v2",
+    "note": "Authenticate to Azure"
+  },
+  {
+    "owner": "azure",
+    "repo": "webapps-deploy",
+    "ref": "v3",
+    "note": "Deploy to Azure Web Apps"
+  },
+  {
+    "owner": "hashicorp",
+    "repo": "setup-terraform",
+    "ref": "v3",
+    "note": "Set up Terraform CLI"
+  },
+  {
+    "owner": "google-github-actions",
+    "repo": "auth",
+    "ref": "v2",
+    "note": "Authenticate to Google Cloud"
+  },
+  {
+    "owner": "google-github-actions",
+    "repo": "setup-gcloud",
+    "ref": "v2",
+    "note": "Set up the Google Cloud SDK"
+  },
+  {
+    "owner": "softprops",
+    "repo": "action-gh-release",
+    "ref": "v2",
+    "note": "Create GitHub releases"
+  },
+  {
+    "owner": "codecov",
+    "repo": "codecov-action",
+    "ref": "v5",
+    "note": "Upload coverage reports to Codecov"
+  },
+  {
+    "owner": "peter-evans",
+    "repo": "create-pull-request",
+    "ref": "v7",
+    "note": "Create pull requests automatically"
+  },
+  {
+    "owner": "EndBug",
+    "repo": "add-and-commit",
+    "ref": "v9",
+    "note": "Add files and create a commit"
+  },
+  {
+    "owner": "sigstore",
+    "repo": "cosign-installer",
+    "ref": "v3",
+    "note": "Install Cosign for container image signing"
+  },
+  {
+    "owner": "slsa-framework",
+    "repo": "slsa-github-generator",
+    "ref": "v2",
+    "note": "Generate SLSA provenance for build artifacts"
+  }
+]

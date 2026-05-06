@@ -23,6 +23,10 @@
     "sync-schema": {
       "cache": false,
       "outputs": ["src/schema/**", "src/generated/**"]
+    },
+    "sync-actions": {
+      "cache": false,
+      "outputs": ["src/generated/**"]
     }
   }
 }

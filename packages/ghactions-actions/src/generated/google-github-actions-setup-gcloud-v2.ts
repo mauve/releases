@@ -1,0 +1,92 @@
+/* eslint-disable */
+// Auto-generated from google-github-actions/setup-gcloud@v2/action.yml. Do not edit by hand.
+// Run `pnpm sync-actions` to regenerate.
+
+import type { UsesStep } from '@mauvezero/ghactions';
+import { makeAction, type ActionStepOptions } from '../runtime.js';
+
+export interface GoogleGithubActionsSetupGcloudV2Inputs {
+  /**
+   * A string representing the version or version constraint of the Cloud SDK
+   * (`gcloud`) to install (e.g. `"290.0.1"` or `">= 197.0.1"`). The default
+   * value is `"latest"`, which will always download and install the latest
+   * available Cloud SDK version.
+   *
+   * - uses: 'google-github-actions/setup-gcloud@v2'
+   * with:
+   * version: '>= 416.0.0'
+   *
+   * If there is no installed `gcloud` version that matches the given
+   * constraint, this GitHub Action will download and install the latest
+   * available version that still matches the constraint.
+   *
+   * Authenticating via Workload Identity Federation requires version
+   * [363.0.0](https://cloud.google.com/sdk/docs/release-notes#36300_2021-11-02)
+   * or newer. If you need support for Workload Identity Federation, specify
+   * your version constraint as such:
+   *
+   * - uses: 'google-github-actions/setup-gcloud@v2'
+   * with:
+   * version: '>= 363.0.0'
+   *
+   * You are responsible for ensuring the `gcloud` version matches the features
+   * and components required.
+   *
+   * @default latest
+   */
+  "version"?: string | boolean | number;
+  /**
+   * ID of the Google Cloud project. If provided, this will configure gcloud to
+   * use this project ID by default for commands. Individual commands can still
+   * override the project using the `--project` flag which takes precedence. If
+   * unspecified, the action attempts to find the "best" project ID by looking
+   * at other inputs and environment variables.
+   */
+  "project_id"?: string | boolean | number;
+  /**
+   * List of additional [gcloud
+   * components](https://cloud.google.com/sdk/docs/components) to install,
+   * specified as a comma-separated list of strings:
+   *
+   * install_components: 'alpha,cloud-datastore-emulator'
+   */
+  "install_components"?: string | boolean | number;
+  /**
+   * Skip installation of gcloud and use the [system-supplied
+   * version](https://github.com/actions/runner-images) instead. If specified,
+   * the `version` input is ignored.
+   *
+   * ⚠️ You will not be able to install additional gcloud components, because the
+   * system installation is locked.
+   *
+   * @default false
+   */
+  "skip_install"?: string | boolean | number;
+  /**
+   * Skip transferring the downloaded artifacts into the runner's tool cache.
+   * On GitHub-managed runners, this makes no difference since they are
+   * ephemeral. On self-hosted runners, this controls whether the downloads are
+   * cached stored on the disk.
+   *
+   * For backwards-compatibility, this is is "false" by default. Setting the
+   * value to "true" can significantly speed up installation times.
+   *
+   * @default false
+   */
+  "skip_tool_cache"?: string | boolean | number;
+}
+
+/**
+ * Set up gcloud Cloud SDK environment
+ *
+ * Downloads, installs, and configures a Google Cloud SDK environment.
+ * Adds the `gcloud` CLI command to the $PATH.
+ *
+ * @see https://github.com/google-github-actions/setup-gcloud
+ */
+export function googleGithubActionsSetupGcloudV2(
+  inputs: GoogleGithubActionsSetupGcloudV2Inputs = {},
+  opts: ActionStepOptions = {},
+): UsesStep {
+  return makeAction("google-github-actions/setup-gcloud@v2", inputs as unknown as Record<string, string | boolean | number | undefined>, opts);
+}

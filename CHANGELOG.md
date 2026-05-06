@@ -12,6 +12,8 @@ package to `X.Y.Z` together.
 
 ### Added
 
+- **`@mauvezero/ghactions-actions`** _(new package)_: Auto-generated type-safe wrappers for known GitHub Actions. Covers all 40+ public repositories in the `actions/` GitHub org that publish versioned releases, plus a curated set of popular third-party actions (`docker/*`, `aws-actions/*`, `azure/*`, `hashicorp/setup-terraform`, `google-github-actions/*`, `softprops/action-gh-release`, `codecov/codecov-action`, `peter-evans/create-pull-request`, `EndBug/add-and-commit`, `sigstore/cosign-installer`). Each wrapper is a typed factory function (e.g. `actionsCheckoutV6(inputs?, opts?)`) that returns a `UsesStep` with the pinned `uses:` ref and a typed `with:` block. Regenerate with `pnpm sync-actions` (set `GITHUB_TOKEN` to avoid rate limits).
+
 - **`@mauvezero/ghactions`** _(new package)_: Typesafe fluent builder for GitHub Actions workflow YAML. Entry point is `workflow()` which returns a `WorkflowBuilder`. Supports all common triggers (`push`, `pull_request`, `schedule`, `workflow_dispatch`, `workflow_call`, `release`), job-level settings (`runsOn`, `needs`, `if_`, `env`, `environment`, `concurrency`, `permissions`, `outputs`, `strategy`, `continueOnError`, `timeoutMinutes`, `container`, `services`, `defaults`), and step factories `run()` (shell command) and `uses()` (action reference) with full per-step option coverage. Serializes to YAML via `.toYaml()`.
 - **`@mauvezero/azpipe-cli`**: `azpipe build` now auto-detects a `WorkflowBuilder` default export and routes to GitHub Actions serialization. Default output path is `.github/workflows/<slug>.yml` (derived from the workflow name); override with `--out`. Azure Pipelines behaviour is unchanged.
 
