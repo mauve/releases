@@ -12,6 +12,8 @@
     { "path": "../azpipe" },
     { "path": "../releases" },
     { "path": "../tasks" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../ghactions" },
+    { "path": "../ghactions-actions" }
   ]
 }

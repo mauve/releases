@@ -1,15 +1,19 @@
 /**
- * `@mauvezero/azpipe-convert` — convert existing `azure-pipelines.yml` files
- * and Azure DevOps Classic Release definitions into TypeScript that uses the
- * `@mauvezero/azpipe` and `@mauvezero/azpipe-releases` builders.
+ * `@mauvezero/azpipe-convert` — convert existing `azure-pipelines.yml` files,
+ * Azure DevOps Classic Release definitions, and GitHub Actions workflow YAML
+ * files into TypeScript using the `@mauvezero/azpipe`,
+ * `@mauvezero/azpipe-releases`, and `@mauvezero/ghactions` builders.
  *
- * Two entry points:
+ * Three entry points:
  * - {@link yamlToTs} — accepts YAML text and returns one TS source per file
  *   (entry plus zero or more sibling template files when the YAML uses
  *   `template:` / `extends:` references).
  * - {@link releaseJsonToTs} — accepts a parsed `ReleaseDefinition` and returns
  *   a single TS source. The CLI layer wraps either reading from a JSON file or
  *   fetching live via the REST client.
+ * - {@link ghaToTs} — accepts GitHub Actions workflow YAML text and returns a
+ *   single TS source using `@mauvezero/ghactions` and
+ *   `@mauvezero/ghactions-actions` builders.
  *
  * The library is pure: no fs / network. The CLI in `@mauvezero/azpipe-cli`
  * adds file IO and the live-fetch path for releases.
@@ -24,6 +28,8 @@ import { emitPipelineSource, type ReferencedTemplate } from './yaml/emit.js';
 import { emitTemplateSource, emitInlineTemplateSource } from './yaml/templates.js';
 import { stripServerFields } from './release/parse.js';
 import { emitReleaseSource, type ReleaseEmitOptions } from './release/emit.js';
+import { parseGhaYaml } from './github/parse.js';
+import { emitGhaSource } from './github/emit.js';
 import { formatTs } from './codegen/prettier.js';
 
 export interface ConvertedFile {
@@ -167,3 +173,30 @@ function rebasePath(filePath: string, outputDir: string): string {
 
 export { stripServerFields } from './release/parse.js';
 export type { ReferencedTemplate };
+
+export interface GhaConvertOptions {
+  /** Run Prettier on emitted files. Default: true. */
+  prettier?: boolean;
+  /** Output filename for the entry workflow. Default: `'workflow.ts'`. */
+  entryFileName?: string;
+}
+
+/**
+ * Convert GitHub Actions workflow YAML text to TypeScript using the
+ * `@mauvezero/ghactions` and `@mauvezero/ghactions-actions` builders.
+ *
+ * The result includes the entry file only (GitHub Actions workflows have no
+ * template-include mechanism equivalent to Azure Pipelines templates).
+ */
+export async function ghaToTs(
+  yamlText: string,
+  opts: GhaConvertOptions = {},
+): Promise<ConvertResult> {
+  const { workflow, warnings } = parseGhaYaml(yamlText);
+  const { source } = emitGhaSource(workflow);
+  const entryName = opts.entryFileName ?? 'workflow.ts';
+  const files: ConvertedFile[] = [
+    { path: entryName, contents: await maybeFormat(source, opts.prettier) },
+  ];
+  return { files, warnings };
+}

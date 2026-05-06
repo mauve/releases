@@ -3,6 +3,7 @@ import { runBuild } from './cmd-build.js';
 import { runBuildImport } from './cmd-build-import.js';
 import { runRelease } from './cmd-release.js';
 import { runBootstrap } from './cmd-bootstrap.js';
+import { runGha } from './cmd-gha-import.js';
 
 function topLevelUsage(): void {
   console.log(`azpipe <command> [options]
@@ -14,6 +15,7 @@ Commands:
   release diff <entry.ts>    Show what \`push\` would change
   release push <entry.ts>    Diff-first PUT (interactive by default)
   release import <json>      Convert a classic-release JSON to TypeScript
+  gha import <workflow.yml>  Convert a GitHub Actions workflow to TypeScript
   bootstrap                  Scaffold a pipelines/ directory in the current repo
 
 Run \`azpipe <command> --help\` for command-specific options.`);
@@ -36,6 +38,9 @@ async function main(): Promise<void> {
       return;
     case 'release':
       await runRelease(argv.slice(1));
+      return;
+    case 'gha':
+      await runGha(argv.slice(1));
       return;
     case 'bootstrap':
       await runBootstrap(argv.slice(1));

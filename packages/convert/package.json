@@ -30,6 +30,8 @@
     "@mauvezero/azpipe-releases": "workspace:*",
     "@mauvezero/azpipe-tasks": "workspace:*",
     "@mauvezero/azpipe-utils": "workspace:*",
+    "@mauvezero/ghactions": "workspace:*",
+    "@mauvezero/ghactions-actions": "workspace:*",
     "prettier": "^3.4.2",
     "yaml": "^2.7.0"
   },
