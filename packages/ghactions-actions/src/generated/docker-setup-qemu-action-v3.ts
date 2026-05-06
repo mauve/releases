@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from docker/setup-qemu-action@v3/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

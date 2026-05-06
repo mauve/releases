@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from peter-evans/create-pull-request@v7/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

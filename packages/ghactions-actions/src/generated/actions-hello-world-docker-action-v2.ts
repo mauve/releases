@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from actions/hello-world-docker-action@v2/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

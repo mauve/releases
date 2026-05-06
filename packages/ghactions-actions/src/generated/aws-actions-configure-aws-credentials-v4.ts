@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from aws-actions/configure-aws-credentials@v4/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from aws-actions/amazon-ecr-login@v2/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

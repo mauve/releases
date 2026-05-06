@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from softprops/action-gh-release@v2/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

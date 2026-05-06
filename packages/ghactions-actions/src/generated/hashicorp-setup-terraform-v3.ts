@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from hashicorp/setup-terraform@v3/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

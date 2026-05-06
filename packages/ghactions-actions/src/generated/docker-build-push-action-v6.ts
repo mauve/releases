@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from docker/build-push-action@v6/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

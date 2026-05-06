@@ -36,6 +36,7 @@ import { findActionFactory } from './actions.js';
 const GHACTIONS = '@mauvezero/ghactions';
 const GHACTIONS_ACTIONS = '@mauvezero/ghactions-actions';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GhaEmitOptions {
   // reserved for future per-option extensions
 }

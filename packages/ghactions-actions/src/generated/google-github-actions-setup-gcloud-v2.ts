@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from google-github-actions/setup-gcloud@v2/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 

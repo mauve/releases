@@ -31,6 +31,7 @@ export default [
       'vendor/**',
       // Generated catalogs — banner says "Do not edit by hand"; lint isn't useful.
       'packages/tasks/src/generated/**',
+      'packages/ghactions-actions/src/generated/**',
       'packages/utils/src/predef/pipeline.ts',
       'packages/utils/src/predef/release.ts',
       'packages/utils/src/predef/shared.ts',

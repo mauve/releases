@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Auto-generated from actions/go-dependency-submission@v2/action.yml. Do not edit by hand.
 // Run `pnpm sync-actions` to regenerate.
 
