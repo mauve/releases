@@ -6,6 +6,15 @@
 > setting up automated release-definition sync with one command:
 > `npx @mauvezero/azpipe-cli bootstrap`
 
+[![npm: azpipe](https://img.shields.io/npm/v/@mauvezero/azpipe?label=azpipe)](https://www.npmjs.com/package/@mauvezero/azpipe)
+[![npm: azpipe-cli](https://img.shields.io/npm/v/@mauvezero/azpipe-cli?label=azpipe-cli)](https://www.npmjs.com/package/@mauvezero/azpipe-cli)
+[![npm: azpipe-releases](https://img.shields.io/npm/v/@mauvezero/azpipe-releases?label=azpipe-releases)](https://www.npmjs.com/package/@mauvezero/azpipe-releases)
+[![npm: azpipe-releases-client](https://img.shields.io/npm/v/@mauvezero/azpipe-releases-client?label=azpipe-releases-client)](https://www.npmjs.com/package/@mauvezero/azpipe-releases-client)
+[![npm: azpipe-tasks](https://img.shields.io/npm/v/@mauvezero/azpipe-tasks?label=azpipe-tasks)](https://www.npmjs.com/package/@mauvezero/azpipe-tasks)
+[![npm: azpipe-utils](https://img.shields.io/npm/v/@mauvezero/azpipe-utils?label=azpipe-utils)](https://www.npmjs.com/package/@mauvezero/azpipe-utils)
+[![npm: azpipe-convert](https://img.shields.io/npm/v/@mauvezero/azpipe-convert?label=azpipe-convert)](https://www.npmjs.com/package/@mauvezero/azpipe-convert)
+[![npm: azpipe-core](https://img.shields.io/npm/v/@mauvezero/azpipe-core?label=azpipe-core)](https://www.npmjs.com/package/@mauvezero/azpipe-core)
+
 Typesafe, programmatic authoring of Azure Pipelines (`azure-pipelines.yml`) in TypeScript.
 
 ## Why this exists
