@@ -1,5 +1,11 @@
 # azpipe
 
+> [!NOTE]
+> **New to azpipe?** See [TUTORIAL.md](./TUTORIAL.md) for a step-by-step guide on
+> bootstrapping a repo — including converting an existing `azure-pipelines.yml` and
+> setting up automated release-definition sync with one command:
+> `npx @mauvezero/azpipe-cli bootstrap`
+
 Typesafe, programmatic authoring of Azure Pipelines (`azure-pipelines.yml`) in TypeScript.
 
 ## Why this exists
@@ -47,18 +53,27 @@ Derived packages typically depend on `@mauvezero/azpipe` + `@mauvezero/azpipe-ut
 
 ## Installing / running the CLI
 
-The packages aren't published to a public registry yet. To run the CLI, clone
-the repo and build from source:
+Install globally or use `npx`:
 
 ```bash
-git clone https://github.com/mauve/releases.git
-cd releases
-pnpm install
-pnpm -r build
+# one-off via npx (no install needed):
+npx @mauvezero/azpipe-cli build pipeline.ts --out azure-pipelines.yml
 
-node packages/cli/dist/bin.js build pipeline.ts --out azure-pipelines.yml
-node packages/cli/dist/bin.js build import azure-pipelines.yml --out pipeline.ts
-node packages/cli/dist/bin.js release import --name web-release --org mauve --project platform
+# or install globally:
+npm install -g @mauvezero/azpipe-cli
+azpipe build pipeline.ts --out azure-pipelines.yml
+```
+
+Bootstrap a repo (scaffolds `pipelines/`, converts an existing YAML, and sets up a release-sync pipeline):
+
+```bash
+npx @mauvezero/azpipe-cli bootstrap
+```
+
+Individual packages are also on npm under the `@mauvezero` scope:
+
+```bash
+npm install @mauvezero/azpipe @mauvezero/azpipe-tasks @mauvezero/azpipe-utils
 ```
 
 ## Quick example
@@ -301,7 +316,5 @@ Microsoft's published JSON schema (the one used by the VS Code extension) is str
 If a pipeline this library accepts is later rejected by Azure, please open an issue with the offending input — it likely points to a real validator gap, not just schema strictness.
 
 ## Status
-
-Early — `0.1.0`. API may change. The public surface is the fluent builder, step factories, `defineTemplate`/`extend`, and the CLI; everything else is implementation detail.
 
 See [CHANGELOG.md](./CHANGELOG.md) for release history and [DEVELOPING.md](./DEVELOPING.md) for build, test, schema-sync, and release instructions.
