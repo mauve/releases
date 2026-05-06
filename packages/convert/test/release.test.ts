@@ -166,4 +166,82 @@ describe('releaseJsonToTs', () => {
     expect(src).not.toContain('createdBy');
     expect(src).not.toContain('_links');
   });
+
+  describe('script extraction', () => {
+    const cmdLineTaskId = 'D9BAFED4-0B18-4F58-968D-86655B4D2CE9';
+
+    it('extracts multiline task script input to an external file', async () => {
+      const def: ReleaseDefinition = {
+        name: 'r',
+        environments: [
+          {
+            ...baseEnv,
+            name: 'staging',
+            deployPhases: [
+              {
+                rank: 1,
+                phaseType: 'agentBasedDeployment',
+                name: 'Agent job',
+                workflowTasks: [
+                  {
+                    taskId: cmdLineTaskId,
+                    version: '2.*',
+                    enabled: true,
+                    name: 'Run deploy script',
+                    inputs: {
+                      script: 'echo step1\necho step2\necho done\n',
+                    },
+                  },
+                ],
+                deploymentInput: { queueId: 0, agentSpecification: { identifier: 'ubuntu-latest' } },
+              },
+            ],
+          },
+        ],
+      };
+      const result = await releaseJsonToTs(def, { org: 'o', project: 'p', prettier: false });
+      // Entry file + 1 script file
+      expect(result.files).toHaveLength(2);
+      const src = result.files[0]!.contents;
+      const scriptFile = result.files[1]!;
+      expect(src).toContain('include(');
+      expect(src).toContain("from '@mauvezero/azpipe'");
+      expect(scriptFile.path).toBe('scripts/run-deploy-script.sh');
+      expect(scriptFile.contents).toContain('echo step1');
+    });
+
+    it('keeps single-line task inputs inline', async () => {
+      const def: ReleaseDefinition = {
+        name: 'r',
+        environments: [
+          {
+            ...baseEnv,
+            name: 'staging',
+            deployPhases: [
+              {
+                rank: 1,
+                phaseType: 'agentBasedDeployment',
+                name: 'Agent job',
+                workflowTasks: [
+                  {
+                    taskId: cmdLineTaskId,
+                    version: '2.*',
+                    enabled: true,
+                    name: 'Echo',
+                    inputs: { script: 'echo hello' },
+                  },
+                ],
+                deploymentInput: { queueId: 0, agentSpecification: { identifier: 'ubuntu-latest' } },
+              },
+            ],
+          },
+        ],
+      };
+      const result = await releaseJsonToTs(def, { org: 'o', project: 'p', prettier: false });
+      expect(result.files).toHaveLength(1);
+      const src = result.files[0]!.contents;
+      expect(src).not.toContain('include(');
+      expect(src).toContain("'echo hello'");
+    });
+  });
 });

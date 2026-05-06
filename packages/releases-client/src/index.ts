@@ -7,7 +7,8 @@
  * - {@link ReleaseClient} — get/list/put against the REST API.
  * - {@link diffAgainstServer} — fetch + diff vs a local definition.
  * - {@link push} — diff-first PUT with interactive confirmation.
- * - {@link getToken} — Entra token acquisition via `DefaultAzureCredential`.
+ * - {@link getToken} — token acquisition: SYSTEM_ACCESSTOKEN → DefaultAzureCredential.
+ * - {@link SystemAccessTokenCredential} — wraps Azure Pipelines job token as a credential.
  *
  * @packageDocumentation
  */
@@ -21,6 +22,7 @@ export {
 export { resolveQueueRefs, UnknownQueueError } from './resolve.js';
 export {
   getToken,
+  SystemAccessTokenCredential,
   AZURE_DEVOPS_RESOURCE_ID,
   type AuthOptions,
 } from './auth.js';

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import type {
   BashStep,
   CheckoutStep,
@@ -172,3 +174,62 @@ export function stepTemplate(
 }
 
 export type { Step };
+
+/**
+ * Infer the `file://` URL of the direct caller of `include()` by parsing the
+ * V8 error stack. Handles two frame formats emitted by Node.js / vitest:
+ *   - `file:///abs/path/to/file.ts:line:col`  (node_modules, vitest runner)
+ *   - `/abs/path/to/file.ts:line:col`          (user code in some environments)
+ */
+function callerFileUrl(): string {
+  const thisPath = fileURLToPath(import.meta.url);
+  for (const line of (new Error().stack ?? '').split('\n')) {
+    // Match a file:// URL or an absolute filesystem path within the frame.
+    const raw = /(file:\/\/[^\s)]+|\/[^\s)]+)/.exec(line)?.[1];
+    if (!raw) continue;
+    // Strip trailing :line:col suffix then normalise to an absolute path.
+    const stripped = raw.replace(/:\d+:\d+$/, '');
+    let filePath: string;
+    try {
+      filePath = stripped.startsWith('file://') ? fileURLToPath(stripped) : stripped;
+    } catch {
+      continue;
+    }
+    if (!filePath.startsWith('/')) continue; // skip node:internal, vm://, etc.
+    if (filePath === thisPath) continue; // our own file
+    if (filePath.includes('/node_modules/')) continue; // framework/runner frames
+    return pathToFileURL(filePath).href;
+  }
+  // Fallback: treat the path as relative to the current working directory.
+  return pathToFileURL(process.cwd() + '/').href;
+}
+
+/**
+ * Read a script file and return its contents as a string.
+ *
+ * Intended for use in generated pipeline/release TypeScript files to reference
+ * external script files instead of embedding large inline scripts. The path is
+ * resolved relative to the **calling file's directory**, matching the behaviour
+ * of a local `import`.
+ *
+ * @param relativePath - Path to the script file, relative to `baseUrl`.
+ * @param baseUrl - The calling module's `import.meta.url`. When omitted,
+ *   the caller's file URL is inferred from the call stack automatically.
+ *   Passing `import.meta.url` explicitly is more robust and avoids any
+ *   reliance on stack parsing; it is the recommended style for generated files.
+ * @returns The file contents as a UTF-8 string.
+ *
+ * @example
+ * ```ts
+ * import { bash, include } from '@mauvezero/azpipe';
+ *
+ * // Explicit (recommended — generated files always use this form):
+ * job.step(bash(include('./scripts/build.sh', import.meta.url)));
+ *
+ * // Implicit — caller inferred from call stack:
+ * job.step(bash(include('./scripts/build.sh')));
+ * ```
+ */
+export function include(relativePath: string, baseUrl?: string): string {
+  return readFileSync(fileURLToPath(new URL(relativePath, baseUrl ?? callerFileUrl())), 'utf8');
+}

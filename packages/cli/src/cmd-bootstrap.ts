@@ -246,11 +246,10 @@ function releaseSyncYmlTemplate(
 #
 # Pipeline name in Azure DevOps: ${syncPipelineName}
 #
-# Before registering this pipeline in Azure DevOps:
-#   1. Set pipeline variables AZURE_DEVOPS_ORG and AZURE_DEVOPS_PROJECT
-#      in the Azure DevOps UI (or use the defaults below).
-#   2. Ensure the service connection / service principal has
-#      "Release Definition Contributor" permission.
+# After registering this pipeline in Azure DevOps, grant the
+# build service account "Release Definition Contributor" in:
+#   ${project} project → Project Settings → Permissions
+#   Search for: "${project} Build Service (${org})"
 # ============================================================
 name: ${syncPipelineName}
 
@@ -297,6 +296,7 @@ steps:
     env:
       AZURE_DEVOPS_ORG: $(AZURE_DEVOPS_ORG)
       AZURE_DEVOPS_PROJECT: $(AZURE_DEVOPS_PROJECT)
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
   - script: npx azpipe release push release.ts --yes
     workingDirectory: pipelines
@@ -306,6 +306,7 @@ steps:
     env:
       AZURE_DEVOPS_ORG: $(AZURE_DEVOPS_ORG)
       AZURE_DEVOPS_PROJECT: $(AZURE_DEVOPS_PROJECT)
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 `;
 }
 
@@ -369,12 +370,15 @@ npm run push         # interactive push
 
 ## Credentials
 
-The \`release-sync.yml\` pipeline reads org/project from pipeline variables:
-- \`AZURE_DEVOPS_ORG\` — set to \`${org}\`
-- \`AZURE_DEVOPS_PROJECT\` — set to \`${project}\`
+\`release-sync.yml\` uses the pipeline's built-in job token (\`SYSTEM_ACCESSTOKEN\`) to
+authenticate against the Azure DevOps Releases API — no service principal or client
+secret required.
 
-Authentication uses \`DefaultAzureCredential\` (managed identity or workload identity federation).
-Ensure the identity has **Release Definition Contributor** permission in the project.
+One-time setup after registering the pipeline:
+
+1. Go to **${org}** → **${project}** → Project Settings → **Permissions**.
+2. Search for **${project} Build Service (${org})**.
+3. Grant it the **Release Definition Contributor** role.
 `;
 }
 
@@ -549,6 +553,10 @@ Next steps:
   4. npm run diff            # check drift vs Azure DevOps
   5. Register release-sync.yml in Azure DevOps as a new pipeline
      (point it at: pipelines/release-sync.yml)
+  6. Grant the build service account permission to manage releases:
+     ${org ? `https://dev.azure.com/${org}/${project || '<project>'}/_settings/permissions` : '<org>/<project> → Project Settings → Permissions'}
+     Search for: "${project || '<project>'} Build Service (${org || '<org>'})"
+     Grant role: Release Definition Contributor
 
 See pipelines/README.md for full documentation.`);
 }

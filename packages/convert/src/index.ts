@@ -90,10 +90,15 @@ export async function yamlToTs(
   const { pipeline, warnings } = parsePipelineYaml(yamlText, opts);
   const outputDir = opts.outputDir ?? '.';
   const inlineTemplates = opts.inlineTemplates ?? true;
-  const { source, referencedTemplates } = emitPipelineSource(pipeline, { outputDir, inlineTemplates });
+  const { source, referencedTemplates, extractedScripts } = emitPipelineSource(pipeline, { outputDir, inlineTemplates });
   const files: ConvertedFile[] = [];
   const entryName = opts.entryFileName ?? 'pipeline.ts';
   files.push({ path: entryName, contents: await maybeFormat(source, opts.prettier) });
+
+  // Add extracted script files (no Prettier — they are plain shell/PS1).
+  for (const s of extractedScripts) {
+    files.push({ path: s.path, contents: s.content });
+  }
 
   const emitTemplates = opts.emitTemplates ?? true;
   if (emitTemplates && opts.loadTemplate) {
@@ -140,12 +145,13 @@ export async function releaseJsonToTs(
   opts: ReleaseConvertLibraryOptions,
 ): Promise<ConvertResult> {
   const cleaned = stripServerFields(def);
-  const { source } = emitReleaseSource(cleaned, opts);
+  const { source, extractedScripts } = emitReleaseSource(cleaned, opts);
   const entryName = opts.entryFileName ?? 'release.ts';
-  return {
-    files: [{ path: entryName, contents: await maybeFormat(source, opts.prettier) }],
-    warnings: [],
-  };
+  const files: ConvertedFile[] = [
+    { path: entryName, contents: await maybeFormat(source, opts.prettier) },
+    ...extractedScripts.map((s) => ({ path: s.path, contents: s.content })),
+  ];
+  return { files, warnings: [] };
 }
 
 async function maybeFormat(source: string, prettier?: boolean): Promise<string> {

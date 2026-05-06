@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   pipeline,
   script,
   task,
   checkout,
+  include,
   JobBuilder,
   DeploymentJobBuilder,
   StageBuilder,
@@ -115,5 +119,30 @@ describe('dependsOn accepts builder references', () => {
       })
       .toYaml();
     expect(yml).toContain('dependsOn: Build');
+  });
+});
+
+describe('include()', () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  let tmpDir: string;
+
+  it('reads a file given an explicit baseUrl', () => {
+    tmpDir = mkdtempSync(join(here, '.tmp-include-'));
+    writeFileSync(join(tmpDir, 'hello.sh'), 'echo hello\n');
+    const contents = include('./hello.sh', new URL(`file://${tmpDir}/`).href);
+    expect(contents).toBe('echo hello\n');
+    rmSync(tmpDir, { recursive: true });
+  });
+
+  it('infers the caller file URL when baseUrl is omitted', () => {
+    // Write a script next to this test file so the implicit resolution works.
+    const scriptPath = join(here, 'hello-implicit.sh');
+    writeFileSync(scriptPath, 'echo implicit\n');
+    try {
+      const contents = include('./hello-implicit.sh');
+      expect(contents).toBe('echo implicit\n');
+    } finally {
+      rmSync(scriptPath);
+    }
   });
 });

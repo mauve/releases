@@ -81,6 +81,8 @@ describe('azpipe bootstrap', () => {
     expect(yml).toContain('azpipe release diff');
     expect(yml).toContain('azpipe release push');
     expect(yml).toContain("ne(variables['Build.Reason'], 'PullRequest')");
+    // Auth via built-in job token — no service principal vars needed.
+    expect(yml).toContain('SYSTEM_ACCESSTOKEN: $(System.AccessToken)');
   });
 
   it('release-sync.yml uses detected or fallback branch name', () => {
@@ -99,7 +101,7 @@ describe('azpipe bootstrap', () => {
     const readme = readFileSync(join(gitRoot, 'pipelines', 'README.md'), 'utf8');
     expect(readme).toContain('npm run build');
     expect(readme).toContain('azure-pipelines.yml');
-    expect(readme).toContain('DefaultAzureCredential');
+    expect(readme).toContain('Release Definition Contributor');
   });
 
   it('converts existing azure-pipelines.yml to TypeScript', () => {

@@ -219,4 +219,102 @@ jobs:
     expect(src).not.toMatch(/patterns:\s*`/);
     expect(src).not.toMatch(/patterns:\s*'[^']*\\n/);
   });
+
+  describe('script extraction', () => {
+    it('extracts a multiline bash step to a script file', async () => {
+      const yaml = `
+pool: { vmImage: ubuntu-latest }
+jobs:
+  - job: build
+    steps:
+      - bash: |
+          npm ci
+          npm run build
+        displayName: Build
+`;
+      const result = await yamlToTs(yaml, { prettier: false });
+      // Entry file + 1 extracted script
+      expect(result.files).toHaveLength(2);
+      const src = result.files[0]!.contents;
+      const script = result.files[1]!;
+      // Entry references include()
+      expect(src).toContain("include('./scripts/build.sh', import.meta.url)");
+      expect(src).toContain("import { bash, include, pipeline } from '@mauvezero/azpipe'");
+      // Script file is at expected path with correct content
+      expect(script.path).toBe('scripts/build.sh');
+      expect(script.contents).toContain('npm ci');
+      expect(script.contents).toContain('npm run build');
+    });
+
+    it('keeps single-line scripts inline', async () => {
+      const yaml = `
+pool: { vmImage: ubuntu-latest }
+steps:
+  - script: npm test
+    displayName: Test
+`;
+      const result = await yamlToTs(yaml, { prettier: false });
+      expect(result.files).toHaveLength(1);
+      const src = result.files[0]!.contents;
+      expect(src).toContain("script('npm test'");
+      expect(src).not.toContain('include(');
+    });
+
+    it('uses .ps1 extension for pwsh steps', async () => {
+      const yaml = `
+pool: { vmImage: windows-latest }
+steps:
+  - pwsh: |
+      Write-Host "Hello"
+      Get-Date
+    displayName: Run PowerShell
+`;
+      const result = await yamlToTs(yaml, { prettier: false });
+      expect(result.files).toHaveLength(2);
+      const script = result.files[1]!;
+      expect(script.path).toBe('scripts/run-powershell.ps1');
+    });
+
+    it('deduplicates identical script content', async () => {
+      const yaml = `
+pool: { vmImage: ubuntu-latest }
+steps:
+  - bash: |
+      npm ci
+      npm test
+    displayName: Test A
+  - bash: |
+      npm ci
+      npm test
+    displayName: Test B
+`;
+      const result = await yamlToTs(yaml, { prettier: false });
+      // Only one script file — content is the same
+      expect(result.files).toHaveLength(2);
+      const src = result.files[0]!.contents;
+      // Both steps reference the same file
+      expect(src.match(/include\('/g)!.length).toBe(2);
+      expect(src.match(/scripts\/test-a\.sh/g)!.length).toBe(2);
+    });
+
+    it('extracts multiline CmdLine@2 task script input', async () => {
+      const yaml = `
+pool: { vmImage: ubuntu-latest }
+steps:
+  - task: CmdLine@2
+    displayName: Run Commands
+    inputs:
+      script: |
+        echo hello
+        echo world
+`;
+      const result = await yamlToTs(yaml, { prettier: false });
+      expect(result.files).toHaveLength(2);
+      const src = result.files[0]!.contents;
+      const scriptFile = result.files[1]!;
+      expect(src).toContain('include(');
+      expect(scriptFile.path).toBe('scripts/run-commands.sh');
+      expect(scriptFile.contents).toContain('echo hello');
+    });
+  });
 });

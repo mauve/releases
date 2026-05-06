@@ -22,12 +22,14 @@ import type {
 import {
   expr,
   isRaw,
+  raw,
   strLit,
   ImportCollector,
 } from '../codegen/printer.js';
 import { rewriteTree } from '../codegen/predef.js';
 import { findTaskFactoryByGuid } from '../codegen/tasks.js';
 import { camelCase, IdentifierScope } from '../codegen/identifiers.js';
+import { ScriptExtractor, type ExtractedScriptFile } from '../codegen/scripts.js';
 
 const RELEASES = '@mauvezero/azpipe-releases';
 const TASKS = '@mauvezero/azpipe-tasks';
@@ -47,6 +49,8 @@ export interface ReleaseEmitOptions {
 
 export interface ReleaseEmitResult {
   source: string;
+  /** Script files extracted from inline task inputs; caller adds them to the output. */
+  extractedScripts: ExtractedScriptFile[];
 }
 
 interface Ctx {
@@ -55,6 +59,7 @@ interface Ctx {
   /** alias → const identifier we picked for it. */
   artifactConsts: Map<string, string>;
   opts: ReleaseEmitOptions;
+  extractor: ScriptExtractor;
 }
 
 /** Convert a release definition to TS source. */
@@ -70,6 +75,7 @@ export function emitReleaseSource(
     scope: new IdentifierScope(),
     artifactConsts: new Map(),
     opts,
+    extractor: new ScriptExtractor(),
   };
   ctx.imports.add(RELEASES, 'releasePipeline');
   if (usedNamespaces.size > 0) ctx.imports.add(UTILS, 'PreDef');
@@ -130,7 +136,7 @@ export function emitReleaseSource(
     (importBlock ? importBlock + '\n\n' : '') +
     declBlock +
     'export default ' + chainSource + ';\n';
-  return { source };
+  return { source, extractedScripts: ctx.extractor.getFiles() };
 }
 
 // ---- artifacts ----------------------------------------------------------
@@ -490,7 +496,6 @@ function renderWorkflowTaskAsTaskStep(task: WorkflowTask, ctx: Ctx, allowGate: b
   const match = findTaskFactoryByGuid(task.taskId, task.version);
   if (!match) {
     if (allowGate) {
-      // Fall through with a fenced TODO so the user knows to wire up a custom helper.
       return `/* TODO unknown taskId ${task.taskId}@${task.version} */ ${strLit(`UNKNOWN:${task.taskId}@${task.version}`)}`;
     }
     return `/* TODO unknown taskId ${task.taskId}@${task.version} */`;
@@ -498,8 +503,11 @@ function renderWorkflowTaskAsTaskStep(task: WorkflowTask, ctx: Ctx, allowGate: b
   ctx.imports.add(TASKS, match.factory);
   const inputsObj = task.inputs ?? {};
   // Run predef rewrite on inputs values too.
-  const rewritten = rewriteTree(inputsObj, 'release').value;
-  const inputsExpr = expr(rewritten, 0);
+  const rewritten = rewriteTree(inputsObj, 'release').value as Record<string, unknown>;
+  // Extract multiline string inputs as external script files.
+  const displayName = task.name;
+  const extracted = extractTaskScriptInputs(rewritten, match.factory, displayName, ctx);
+  const inputsExpr = expr(extracted, 0);
 
   const opts: Record<string, unknown> = {};
   if (task.name) opts['displayName'] = task.name;
@@ -511,8 +519,36 @@ function renderWorkflowTaskAsTaskStep(task: WorkflowTask, ctx: Ctx, allowGate: b
   if (task.enabled === false) opts['enabled'] = false;
 
   if (Object.keys(opts).length === 0) return `${match.factory}(${inputsExpr})`;
-  void AZPIPE;
   return `${match.factory}(${inputsExpr}, ${expr(opts, 0)})`;
+}
+
+function isPowerShellLike(s: string): boolean {
+  return /powershell|pwsh/i.test(s);
+}
+
+/**
+ * Scan a task's inputs for multiline string values and extract them as script
+ * files. Returns a new inputs object with those values replaced by RawExprs
+ * referencing `include(...)`.
+ */
+function extractTaskScriptInputs(
+  inputs: Record<string, unknown>,
+  taskFactoryOrRef: string,
+  displayName: string | undefined,
+  ctx: Ctx,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(inputs)) {
+    if (typeof val === 'string' && val.includes('\n')) {
+      const ext = isPowerShellLike(taskFactoryOrRef) ? '.ps1' : '.sh';
+      const relPath = ctx.extractor.extract(val, displayName ?? key, ext);
+      ctx.imports.add(AZPIPE, 'include');
+      result[key] = raw(`include('./${relPath}', import.meta.url)`);
+    } else {
+      result[key] = val;
+    }
+  }
+  return result;
 }
 
 // ---- environment-state mask helpers ------------------------------------

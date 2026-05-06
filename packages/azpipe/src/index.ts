@@ -9,7 +9,7 @@
  *   document.
  * - Step factories: {@link script}, {@link bash}, {@link pwsh},
  *   {@link powershell}, {@link checkout}, {@link download}, {@link publish},
- *   {@link task}, {@link stepTemplate}.
+ *   {@link task}, {@link stepTemplate}, {@link include}.
  * - Pipeline document types (re-exported from `./types`): {@link PipelineRoot},
  *   {@link Step}, {@link Variable}, {@link Pool}, {@link Resources}, etc.
  * - Validator + serializer (re-exported from `@mauvezero/azpipe-core`):
@@ -47,6 +47,7 @@ export {
   publish,
   task,
   stepTemplate,
+  include,
 } from './builders/steps.js';
 export * from './types.js';
 export {

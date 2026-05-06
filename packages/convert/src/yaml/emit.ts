@@ -40,6 +40,7 @@ import {
 import { rewriteTree } from '../codegen/predef.js';
 import { findTaskFactoryByRef } from '../codegen/tasks.js';
 import { camelCase, IdentifierScope } from '../codegen/identifiers.js';
+import { ScriptExtractor, type ExtractedScriptFile } from '../codegen/scripts.js';
 
 const AZPIPE = '@mauvezero/azpipe';
 const TASKS = '@mauvezero/azpipe-tasks';
@@ -54,6 +55,8 @@ export interface YamlEmitResult {
   /** Names of templates referenced by `template:` / `extends:`. The CLI
    *  layer turns these into per-template TS files. */
   referencedTemplates: ReferencedTemplate[];
+  /** Script files extracted from inline scripts; caller adds them to the output. */
+  extractedScripts: ExtractedScriptFile[];
 }
 
 export interface ReferencedTemplate {
@@ -72,6 +75,7 @@ interface Ctx {
   templates: Map<string, ReferencedTemplate>;
   outputDir: string;
   inlineTemplates: boolean;
+  extractor: ScriptExtractor;
 }
 
 export interface EmitOptions {
@@ -95,6 +99,7 @@ export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {
     templates: new Map(),
     outputDir: opts.outputDir ?? '.',
     inlineTemplates: opts.inlineTemplates ?? true,
+    extractor: new ScriptExtractor(),
   };
   ctx.imports.add(AZPIPE, 'pipeline');
   if (usedNamespaces.size > 0) ctx.imports.add(UTILS, 'PreDef');
@@ -164,7 +169,7 @@ export function emitPipelineSource(pipeline: PipelineRoot, opts: EmitOptions = {
     'export default ' +
     chainSource +
     ';\n';
-  return { source, imports: importBlock, referencedTemplates };
+  return { source, imports: importBlock, referencedTemplates, extractedScripts: ctx.extractor.getFiles() };
 }
 
 // ---- top-level helpers --------------------------------------------------
@@ -320,8 +325,38 @@ function renderScriptLikeStep(
   ctx.imports.add(AZPIPE, factory);
   const opts: Record<string, unknown> = { ...(step as Record<string, unknown>) };
   delete opts[factory];
-  if (Object.keys(opts).length === 0) return `${factory}(${valueArg(body)})`;
-  return `${factory}(${valueArg(body)}, ${valueArg(opts)})`;
+
+  const scriptArg = extractScriptArg(body, factory, opts['displayName'] as string | undefined, ctx);
+
+  if (Object.keys(opts).length === 0) return `${factory}(${scriptArg})`;
+  return `${factory}(${scriptArg}, ${valueArg(opts)})`;
+}
+
+/**
+ * Return the TS expression for a script body: if it's multiline, extract it
+ * to a file and emit `include('./scripts/…', import.meta.url)`, otherwise
+ * return the inline string literal.
+ *
+ * If the body has already been rewritten to a {@link RawExpr} by the predef
+ * pass (e.g. `$(Build.SourceBranch)`), we cannot extract it to a file — pass
+ * it through verbatim.
+ */
+function extractScriptArg(
+  body: unknown,
+  factoryOrTaskRef: string,
+  displayName: string | undefined,
+  ctx: Ctx,
+): string {
+  if (isRaw(body) || typeof body !== 'string') return valueArg(body);
+  if (!body.includes('\n')) return valueArg(body);
+  const ext = isPowerShellLike(factoryOrTaskRef) ? '.ps1' : '.sh';
+  const relPath = ctx.extractor.extract(body, displayName, ext);
+  ctx.imports.add(AZPIPE, 'include');
+  return `include('./${relPath}', import.meta.url)`;
+}
+
+function isPowerShellLike(s: string): boolean {
+  return /powershell|pwsh/i.test(s);
 }
 
 function renderCheckoutStep(step: CheckoutStep, ctx: Ctx): string {
@@ -360,16 +395,18 @@ function renderTaskStep(step: TaskStep, ctx: Ctx): string {
   const opts: Record<string, unknown> = { ...step };
   delete opts['task'];
   delete opts['inputs'];
+  const displayName = step['displayName'] as string | undefined;
   if (match) {
     ctx.imports.add(TASKS, match.factory);
-    const inputsArg = step.inputs ? valueArg(step.inputs) : '{}';
+    const inputs = extractTaskScriptInputs(step.inputs ?? {}, step.task, displayName, ctx);
+    const inputsArg = inputs ? valueArg(inputs) : '{}';
     if (Object.keys(opts).length === 0) return `${match.factory}(${inputsArg})`;
     return `${match.factory}(${inputsArg}, ${valueArg(opts)})`;
   }
   // Unknown task — fall back to raw `task('Foo@1', { inputs, ... })`.
   ctx.imports.add(AZPIPE, 'task');
   const allOpts: Record<string, unknown> = { ...opts };
-  if (step.inputs) allOpts['inputs'] = step.inputs;
+  if (step.inputs) allOpts['inputs'] = extractTaskScriptInputs(step.inputs, step.task, displayName, ctx);
   if (Object.keys(allOpts).length === 0) return `task(${valueArg(step.task)})`;
   return `task(${valueArg(step.task)}, ${valueArg(allOpts)})`;
 }
@@ -429,6 +466,30 @@ function renderPRTrigger(trigger: PRTriggerInput): string {
 }
 
 // ---- helpers ------------------------------------------------------------
+
+/**
+ * Scan a task's inputs for multiline string values and extract them as script
+ * files. Returns a new inputs object with those values replaced by
+ * {@link RawExpr}s referencing `include(...)`.
+ */
+function extractTaskScriptInputs(
+  inputs: Record<string, unknown>,
+  taskRef: string,
+  displayName: string | undefined,
+  ctx: Ctx,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(inputs)) {
+    if (typeof val === 'string' && val.includes('\n')) {
+      const relPath = ctx.extractor.extract(val, displayName ?? key, isPowerShellLike(taskRef) ? '.ps1' : '.sh');
+      ctx.imports.add(AZPIPE, 'include');
+      result[key] = raw(`include('./${relPath}', import.meta.url)`);
+    } else {
+      result[key] = val;
+    }
+  }
+  return result;
+}
 
 function method(name: string, args: string[]): string {
   return '.' + name + '(' + args.join(', ') + ')';
