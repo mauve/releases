@@ -471,20 +471,32 @@ export async function runBootstrap(argv: string[]): Promise<void> {
   mkdirSync(outDir, { recursive: true });
 
   // -- Generate azure-pipelines.ts (convert or stub) -------------------------
+  // Extra files produced by conversion (templates, extracted scripts). Collected
+  // here so they can all be written after the main output-dir is created.
+  const extraConvertedFiles: Array<{ path: string; contents: string }> = [];
   let pipelineTs: string;
   if (convertYml && hasRootYml) {
     console.log('Converting azure-pipelines.yml → azure-pipelines.ts…');
     const yamlText = readFileSync(rootYml, 'utf8');
+    const yamlDir = dirname(rootYml);
     const result = await yamlToTs(yamlText, {
       prettier: true,
-      emitTemplates: false,
+      emitTemplates: true,
       inlineTemplates: false,
       entryFileName: 'azure-pipelines.ts',
       outputDir: '.',
-      loadTemplate: () => undefined,
+      loadTemplate: (templatePath) => {
+        try {
+          return readFileSync(join(yamlDir, templatePath), 'utf8');
+        } catch {
+          return undefined;
+        }
+      },
     });
     for (const w of result.warnings) console.error(`  warning: ${w}`);
-    pipelineTs = result.files[0]?.contents ?? pipelineStubTemplate();
+    const [entryFile, ...siblingFiles] = result.files;
+    pipelineTs = entryFile?.contents ?? pipelineStubTemplate();
+    extraConvertedFiles.push(...siblingFiles);
   } else {
     pipelineTs = pipelineStubTemplate();
   }
@@ -531,6 +543,7 @@ export async function runBootstrap(argv: string[]): Promise<void> {
 
   // -- Write all files -------------------------------------------------------
   function write(filePath: string, content: string): void {
+    mkdirSync(dirname(filePath), { recursive: true });
     writeFileSync(filePath, content, 'utf8');
     console.log(`  Wrote ${filePath}`);
   }
@@ -542,6 +555,11 @@ export async function runBootstrap(argv: string[]): Promise<void> {
   write(join(outDir, 'release.ts'), releaseStubTemplate(org, project, releaseName));
   write(join(outDir, 'release-sync.yml'), releaseSyncYmlTemplate(defaultBranch, syncPipelineName, org, project));
   write(rootYml, rootYmlContent);
+
+  // Write template and script files produced by the converter.
+  for (const f of extraConvertedFiles) {
+    write(join(outDir, f.path), f.contents);
+  }
 
   console.log(`
 Bootstrap complete!
