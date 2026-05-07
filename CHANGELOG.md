@@ -10,6 +10,8 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-07
+
 ### Fixed
 
 - **`@mauvezero/azpipe-cli`** (`azpipe bootstrap`): templates referenced by the source `azure-pipelines.yml` are now recursively converted to TypeScript and written alongside the entry file. Previously `loadTemplate` always returned `undefined` and `emitTemplates` was `false`, so template imports were emitted but the corresponding `.ts` files were never created.
