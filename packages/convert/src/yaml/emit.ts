@@ -41,6 +41,7 @@ import { rewriteTree } from '../codegen/predef.js';
 import { findTaskFactoryByRef } from '../codegen/tasks.js';
 import { camelCase, IdentifierScope } from '../codegen/identifiers.js';
 import { ScriptExtractor, type ExtractedScriptFile } from '../codegen/scripts.js';
+import { resolveInputName, getConnectionKind, connectionFactoryName } from '../codegen/task-aliases.js';
 
 const AZPIPE = '@mauvezero/azpipe';
 const TASKS = '@mauvezero/azpipe-tasks';
@@ -468,9 +469,13 @@ function renderPRTrigger(trigger: PRTriggerInput): string {
 // ---- helpers ------------------------------------------------------------
 
 /**
- * Scan a task's inputs for multiline string values and extract them as script
- * files. Returns a new inputs object with those values replaced by
- * {@link RawExpr}s referencing `include(...)`.
+ * Process a task's inputs:
+ * 1. Resolve YAML alias names to canonical task.json names (e.g. `azureSubscription`
+ *    → `connectedServiceNameARM`) so the generated code matches the typed interface.
+ * 2. Wrap service-connection values in their branded factory call (e.g.
+ *    `azureRMConnection('my-conn')`).
+ * 3. Extract multiline string values as script files and replace them with
+ *    `include('./scripts/…')` expressions.
  */
 function extractTaskScriptInputs(
   inputs: Record<string, unknown>,
@@ -479,13 +484,28 @@ function extractTaskScriptInputs(
   ctx: Ctx,
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
-  for (const [key, val] of Object.entries(inputs)) {
-    if (typeof val === 'string' && val.includes('\n')) {
-      const relPath = ctx.extractor.extract(val, displayName ?? key, isPowerShellLike(taskRef) ? '.ps1' : '.sh');
+  for (const [yamlName, val] of Object.entries(inputs)) {
+    const canonicalName = resolveInputName(taskRef, yamlName);
+    const connKind = getConnectionKind(taskRef, canonicalName);
+
+    if (connKind) {
+      // Wrap the value in a branded connection factory call.
+      const factory = connectionFactoryName(connKind);
+      ctx.imports.add(TASKS, factory);
+      if (typeof val === 'string') {
+        result[canonicalName] = raw(`${factory}(${JSON.stringify(val)})`);
+      } else if (isRaw(val)) {
+        result[canonicalName] = raw(`${factory}(${val.source})`);
+      } else {
+        result[canonicalName] = raw(`${factory}(${expr(val, 0)})`);
+      }
+    } else if (typeof val === 'string' && val.includes('\n')) {
+      // Multiline script: extract to a file.
+      const relPath = ctx.extractor.extract(val, displayName ?? yamlName, isPowerShellLike(taskRef) ? '.ps1' : '.sh');
       ctx.imports.add(AZPIPE, 'include');
-      result[key] = raw(`include('./${relPath}')`);
+      result[canonicalName] = raw(`include('./${relPath}')`);
     } else {
-      result[key] = val;
+      result[canonicalName] = val;
     }
   }
   return result;
