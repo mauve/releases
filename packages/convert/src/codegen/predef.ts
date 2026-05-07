@@ -31,11 +31,26 @@ interface NamespaceMap {
 }
 
 const TOKENS: NamespaceMap = (() => {
+  /** Return true when `s` is a valid JS identifier (no dot-access needed). */
+  function isIdent(s: string): boolean {
+    return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(s);
+  }
+
+  /** Build a dotted/bracket access path from an array of property-name parts.
+   *  Parts that are not valid identifiers (e.g. contain a dot like
+   *  "Repository.Name") are rendered with bracket notation so the generated
+   *  expression compiles correctly. */
+  function partsToPath(parts: string[]): string {
+    return 'PreDef.' + parts
+      .map((p) => (isIdent(p) ? '.' + p : '["' + p + '"]'))
+      .join('');
+  }
+
   function walk(root: unknown, top: string, ns: PredefEntry['ns']): Map<string, PredefEntry> {
     const m = new Map<string, PredefEntry>();
     function rec(obj: unknown, parts: string[]): void {
       if (typeof obj === 'string') {
-        m.set(obj, { path: 'PreDef.' + parts.join('.'), ns });
+        m.set(obj, { path: partsToPath(parts), ns });
         return;
       }
       if (typeof obj !== 'object' || obj === null) return;
