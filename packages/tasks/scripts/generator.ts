@@ -128,6 +128,9 @@ function isInputRequired(input: TaskInput): boolean {
   if (input.required !== true) return false;
   // visibleRule means the input is conditionally shown — treat as optional in TS.
   if (input.visibleRule && input.visibleRule.trim().length > 0) return false;
+  // A non-empty defaultValue means Azure DevOps will apply the default when
+  // the field is omitted, so the caller is not forced to supply it.
+  if (input.defaultValue !== undefined && input.defaultValue !== '') return false;
   return true;
 }
 
