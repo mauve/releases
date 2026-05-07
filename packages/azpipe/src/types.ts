@@ -469,9 +469,13 @@ export interface JobInit {
 /**
  * Materialized regular job: a {@link JobInit} plus the required `job` name and
  * non-optional `steps` list. This is what gets serialized into YAML.
+ *
+ * Azure DevOps allows a job to have no explicit identifier (`job: ~` / null).
+ * Passing `null` omits the `job:` key from the serialized YAML, which Azure
+ * DevOps accepts and treats as an anonymous single-job stage.
  */
 export interface JobObject extends JobInit {
-  job: string;
+  job: string | null;
   steps: Step[];
 }
 

@@ -129,11 +129,13 @@ export class StageBuilder {
    * Two forms are supported:
    * - `job('name', j => j.step(...).step(...))` — fluent configurator.
    * - `job('name', { pool, displayName, ... })` — initial-fields object.
+   *
+   * Pass `null` as the name for an unnamed job (Azure DevOps allows this).
    */
-  job(name: string, configure: (j: JobBuilder) => JobBuilder | void): this;
-  job(name: string, init?: JobInit): this;
+  job(name: string | null, configure: (j: JobBuilder) => JobBuilder | void): this;
+  job(name: string | null, init?: JobInit): this;
   job(
-    name: string,
+    name: string | null,
     arg?: JobInit | ((j: JobBuilder) => JobBuilder | void),
   ): this {
     if (typeof arg === 'function') {

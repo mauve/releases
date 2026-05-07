@@ -32,17 +32,18 @@ export class JobBuilder {
   private readonly state: JobObject;
 
   /**
-   * @param name - Job identifier (used as the `job:` key).
+   * @param name - Job identifier (used as the `job:` key). Pass `null` for an
+   *   unnamed job, which Azure DevOps accepts as an anonymous single-job stage.
    * @param init - Optional initial fields. Steps are copied into the builder's
    *   internal step list.
    */
-  constructor(name: string, init: JobInit = {}) {
+  constructor(name: string | null, init: JobInit = {}) {
     this.state = { job: name, steps: init.steps ? [...init.steps] : [], ...init };
     if (this.state.steps === undefined) this.state.steps = [];
   }
 
   /** The job's identifier (the `job:` value). Read-only. */
-  get name(): string {
+  get name(): string | null {
     return this.state.job;
   }
 
