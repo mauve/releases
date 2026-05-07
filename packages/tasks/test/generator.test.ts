@@ -37,9 +37,10 @@ describe('generator', () => {
 
   it('emits a typed Inputs interface with required vs optional honoured', () => {
     expect(contents).toContain('export interface SampleTaskV2Inputs {');
-    // required: true, no visibleRule → required
+    // required: true, no visibleRule, no defaultValue → required
     expect(contents).toMatch(/"subscription":\s*AzureRMConnection;/);
-    expect(contents).toMatch(/"scriptType":\s*"ps" \| "bash" \| "pscore";/);
+    // required: true BUT has defaultValue → optional (caller can rely on the default)
+    expect(contents).toMatch(/"scriptType"\?:\s*"ps" \| "bash" \| "pscore";/);
     // required: true BUT has visibleRule → optional
     expect(contents).toMatch(/"inlineScript"\?:\s*string;/);
     // not required → optional

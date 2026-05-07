@@ -41,7 +41,7 @@ const TOKENS: NamespaceMap = (() => {
    *  "Repository.Name") are rendered with bracket notation so the generated
    *  expression compiles correctly. */
   function partsToPath(parts: string[]): string {
-    return 'PreDef.' + parts
+    return 'PreDef' + parts
       .map((p) => (isIdent(p) ? '.' + p : '["' + p + '"]'))
       .join('');
   }

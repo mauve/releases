@@ -238,7 +238,7 @@ jobs:
       const src = result.files[0]!.contents;
       const script = result.files[1]!;
       // Entry references include()
-      expect(src).toContain("include('./scripts/build.sh', import.meta.url)");
+      expect(src).toContain("include('./scripts/build.sh')");
       expect(src).toContain("import { bash, include, pipeline } from '@mauvezero/azpipe'");
       // Script file is at expected path with correct content
       expect(script.path).toBe('scripts/build.sh');

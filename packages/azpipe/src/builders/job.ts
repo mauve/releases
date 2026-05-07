@@ -245,7 +245,10 @@ export type JobDep = string | JobBuilder | DeploymentJobBuilder;
 
 /** Resolve a {@link JobDep} to the underlying job name. */
 export function resolveJobName(dep: JobDep): string {
-  return typeof dep === 'string' ? dep : dep.name;
+  if (typeof dep === 'string') return dep;
+  const n = dep.name;
+  if (n === null) throw new Error('Cannot use an unnamed job as a dependency.');
+  return n;
 }
 
 /** Type guard: is `x` a {@link JobBuilder} instance? */
