@@ -10,6 +10,16 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@mauvezero/azpipe-cli`** (`azpipe bootstrap`): templates referenced by the source `azure-pipelines.yml` are now recursively converted to TypeScript and written alongside the entry file. Previously `loadTemplate` always returned `undefined` and `emitTemplates` was `false`, so template imports were emitted but the corresponding `.ts` files were never created.
+- **`@mauvezero/azpipe-cli`** (`azpipe bootstrap`): extracted script files (`scripts/*.sh`, `scripts/*.ps1`) are now written to the output directory. The bootstrap previously discarded all `result.files` entries beyond the first one.
+- **`@mauvezero/azpipe-convert`**: `include()` calls in generated TypeScript no longer pass `import.meta.url` as the second argument. The argument is optional, and emitting it caused TypeScript errors in repositories configured for CommonJS or pre-ES2020 targets.
+- **`@mauvezero/azpipe`**: `job()` and `JobBuilder` now accept `null` as the job name. Azure DevOps allows unnamed jobs (`job: ~`); the previous `string`-only type caused type errors in code converted from such pipelines.
+- **`@mauvezero/azpipe-convert`**: task inputs are now resolved from their YAML-friendly alias names to the canonical task.json names expected by the typed factory interfaces (e.g. `azureSubscription` → `connectedServiceNameARM` for `AzureCLI@2`). Service-connection inputs are additionally wrapped in their branded factory call (e.g. `azureRMConnection('...')`). This mirrors the alias-resolution logic already present in the template emitter.
+- **`@mauvezero/azpipe-tasks`** (generator): task input fields that are `required: true` but carry a non-empty `defaultValue` are now emitted as optional (`?`) in the TypeScript interface. Azure DevOps applies the default when the field is omitted, so callers should not be forced to supply it (e.g. `versioningScheme` on `DotNetCoreCLI@2`). Re-run `pnpm sync-tasks` to apply to the generated files.
+- **`@mauvezero/azpipe-convert`**: `$(Build.Repository.Name)` and other predefined variables whose `PreDef` key contains a dot are now emitted with bracket notation (`PreDef.Pipeline.Build["Repository.Name"]`) instead of the invalid dot-notation path (`PreDef.Pipeline.Build.Repository.Name`).
+
 ## [0.5.0] - 2026-05-06
 
 ### Added
