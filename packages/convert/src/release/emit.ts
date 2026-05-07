@@ -543,7 +543,7 @@ function extractTaskScriptInputs(
       const ext = isPowerShellLike(taskFactoryOrRef) ? '.ps1' : '.sh';
       const relPath = ctx.extractor.extract(val, displayName ?? key, ext);
       ctx.imports.add(AZPIPE, 'include');
-      result[key] = raw(`include('./${relPath}', import.meta.url)`);
+      result[key] = raw(`include('./${relPath}')`);
     } else {
       result[key] = val;
     }

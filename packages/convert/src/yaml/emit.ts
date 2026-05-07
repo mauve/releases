@@ -352,7 +352,7 @@ function extractScriptArg(
   const ext = isPowerShellLike(factoryOrTaskRef) ? '.ps1' : '.sh';
   const relPath = ctx.extractor.extract(body, displayName, ext);
   ctx.imports.add(AZPIPE, 'include');
-  return `include('./${relPath}', import.meta.url)`;
+  return `include('./${relPath}')`;
 }
 
 function isPowerShellLike(s: string): boolean {
@@ -483,7 +483,7 @@ function extractTaskScriptInputs(
     if (typeof val === 'string' && val.includes('\n')) {
       const relPath = ctx.extractor.extract(val, displayName ?? key, isPowerShellLike(taskRef) ? '.ps1' : '.sh');
       ctx.imports.add(AZPIPE, 'include');
-      result[key] = raw(`include('./${relPath}', import.meta.url)`);
+      result[key] = raw(`include('./${relPath}')`);
     } else {
       result[key] = val;
     }
