@@ -97,11 +97,14 @@ export class ReleaseClient {
    * automatically.
    */
   async putDefinition(def: ReleaseDefinition): Promise<ReleaseDefinition> {
-    const r = await this.request<ReleaseDefinition>('definitions', {
-      method: 'PUT',
+    const isCreate = def.id === undefined;
+    const path = isCreate ? 'definitions' : `definitions/${def.id}`;
+    const method = isCreate ? 'POST' : 'PUT';
+    const r = await this.request<ReleaseDefinition>(path, {
+      method,
       body: JSON.stringify(def),
     });
-    if (r === null) throw new NotFoundError('PUT release definition returned 404.');
+    if (r === null) throw new NotFoundError(`${method} release definition returned 404.`);
     return r;
   }
 

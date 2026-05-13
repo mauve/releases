@@ -76,11 +76,12 @@ function ref(name: string, id?: string): ArtifactSourceReference {
  * buildArtifact({ alias: 'web', definitionId: 100, isPrimary: true })
  */
 export function buildArtifact(spec: BuildArtifactSpec): ReleaseArtifact {
+  const defId = String(spec.definitionId);
   const definitionReference: Record<string, ArtifactSourceReference> = {
-    definition: ref(String(spec.definitionId)),
+    definition: ref(defId, defId),
     defaultVersionType: ref(spec.defaultVersionType ?? 'latestType'),
   };
-  if (spec.projectId) definitionReference['project'] = ref(spec.projectId);
+  if (spec.projectId) definitionReference['project'] = ref(spec.projectId, spec.projectId);
   if (spec.defaultVersionBranch)
     definitionReference['defaultVersionBranch'] = ref(spec.defaultVersionBranch);
   return attachOutput({

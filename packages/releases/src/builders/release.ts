@@ -47,8 +47,13 @@ export interface ReleasePipelineInit {
   org: string;
   /** Project name within the organization. */
   project: string;
-  /** Release definition name (also the lookup key for diff/push). */
+  /** Release definition name. */
   name: string;
+  /**
+   * Existing release definition id. When set, diff/push uses this id for
+   * lookup instead of the name, so renames in ADO don't break the pipeline.
+   */
+  id?: number;
   /** Folder path; default `'\\'`. */
   path?: string;
   description?: string;
@@ -76,6 +81,7 @@ export class ReleasePipelineBuilder {
     this.init = init;
     this.state = {
       name: init.name,
+      ...(init.id !== undefined ? { id: init.id } : {}),
       ...(init.path !== undefined ? { path: init.path } : {}),
       ...(init.description !== undefined ? { description: init.description } : {}),
       ...(init.releaseNameFormat !== undefined

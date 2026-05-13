@@ -16,20 +16,22 @@ export interface DiffAgainstServerResult {
 }
 
 /**
- * Fetch the server's current release definition (matching `local.name`) and
- * diff it against the local one.
+ * Fetch the server's current release definition and diff it against the local one.
  *
- * Before diffing, any name-based queue references in `local` (set via
- * `AgentPhaseBuilder.pool('Queue Name')`) are resolved to numeric `queueId`s
- * by hitting `listQueues`. Server-managed fields (`revision`, `id`, audit
- * timestamps) are ignored.
+ * Lookup prefers `local.id` when set (stable across renames); falls back to
+ * `local.name`. Before diffing, name-based queue references in `local` (set
+ * via `AgentPhaseBuilder.pool('Queue Name')`) are resolved to numeric
+ * `queueId`s. Server-managed fields (`revision`, `id`, audit timestamps) are
+ * ignored.
  */
 export async function diffAgainstServer(
   local: ReleaseDefinition,
   client: ReleaseClient,
 ): Promise<DiffAgainstServerResult> {
   await resolveQueueRefs(local, client);
-  const server = await client.getDefinitionByName(local.name);
+  const server = local.id !== undefined
+    ? await client.getDefinition(local.id).catch(() => null)
+    : await client.getDefinitionByName(local.name);
   const nodes = diff(server ?? {}, local, {
     descriptor: releaseDescriptor,
     ignorePaths: [...SERVER_MANAGED_PATHS],
