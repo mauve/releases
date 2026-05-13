@@ -10,6 +10,17 @@ package to `X.Y.Z` together.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-05-13
+
+### Added
+
+- **`@mauvezero/azpipe-releases`**: `ReleasePipelineInit` now accepts an optional `id` field. When set, `diffAgainstServer` resolves the existing definition via `getDefinition(id)` instead of `getDefinitionByName(name)`, so renaming the release pipeline in Azure DevOps no longer breaks push/diff.
+
+### Fixed
+
+- **`@mauvezero/azpipe-releases-client`**: `definitionReference.definition` and `.project` entries in build artifact sources now carry their GUIDs/IDs in the `id` field instead of `name`, matching what the ADO Releases API requires. Passing numeric IDs or GUIDs as `name` previously caused a 400 "Artifact source should have source information" error.
+- **`@mauvezero/azpipe-releases-client`**: `putDefinition` now uses `POST /definitions` when creating a new definition and `PUT /definitions/{id}` when updating an existing one. Always using `PUT` previously returned 404 on first-time creation.
+
 ## [0.6.0] - 2026-05-07
 
 ### Fixed
